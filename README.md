@@ -1,44 +1,12 @@
-# Portfolio Lab en Vanilla JavaScript modulaire
+# Portfolio React SPA
 
-## Presentation
+Ce depot contient une refonte du portfolio en **React JS** sous forme de **SPA** avec :
 
-Ce projet est un portfolio HTML/CSS pilote par du JavaScript modulaire, en suivant la methode de la demo PDF :
-
-- un module de donnees partage ;
-- un module API pour `fetch()` ;
-- un module pour la liste des projets ;
-- un module pour le formulaire ;
-- un module pour le detail d'un projet.
-
-L'interface visuelle du site est conservee, mais la logique JavaScript est maintenant alignee sur une structure plus simple et plus proche de la demo.
-
-## Structure JavaScript
-
-- [projet.js](./projet.js) : creation et normalisation des projets, tableau partage en memoire
-- [api.js](./api.js) : `GET`, `POST`, `PUT`, `DELETE` vers `json-server`
-- [detailProjet.js](./detailProjet.js) : affichage du detail d'un projet
-- [project-list.js](./project-list.js) : liste, filtres, suppression
-- [project-form.js](./project-form.js) : ajout et modification
-- [project-detail.js](./project-detail.js) : page detail
-- [app.js](./app.js) : interactions de la page d'accueil
-
-Les pages HTML chargent maintenant leurs scripts avec `type="module"`.
-
-## API
-
-Les donnees sont lues dans `db.json` via `json-server` a l'adresse :
-
-```txt
-http://localhost:3000/projets
-```
-
-Les requetes utilisees sont :
-
-- `GET /projets`
-- `GET /projets/:id`
-- `POST /projets`
-- `PUT /projets/:id`
-- `DELETE /projets/:id`
+- composants reutilisables ;
+- routage client avec React Router ;
+- gestion locale de l'etat ;
+- formulaire d'ajout et d'edition ;
+- chargement et persistance des projets via `json-server`.
 
 ## Lancer le projet
 
@@ -48,10 +16,50 @@ Installer les dependances :
 npm.cmd install
 ```
 
-Lancer l'API locale :
+Demarrer l'API REST factice :
 
 ```powershell
 npm.cmd run api
 ```
 
-Ouvrir ensuite `index.html`, `lister-projets.html` ou les autres pages du portfolio dans le navigateur.
+Demarrer l'application React :
+
+```powershell
+npm.cmd run dev
+```
+
+Verifier la compilation de production :
+
+```powershell
+npm.cmd run build
+```
+
+## Scripts
+
+- `npm run dev` : lance Vite en mode developpement
+- `npm run build` : construit la version de production
+- `npm run preview` : previsualise la version construite
+- `npm run api` : demarre `json-server` sur `http://localhost:3000`
+
+## Structure principale
+
+- `src/App.jsx` : shell global et routes
+- `src/pages/HomePage.jsx` : page d'accueil / presentation
+- `src/pages/PortfolioPage.jsx` : page de la demo portfolio
+- `src/components/Dossier.jsx` : composant principal de gestion
+- `src/components/Projet.jsx` : carte d'un projet
+- `src/components/AjouterProjet.jsx` : formulaire d'ajout / edition
+- `src/components/DetaillerProjet.jsx` : affichage detaille d'un projet
+- `src/services/projectsApi.js` : appels HTTP vers `json-server`
+- `db.json` : base de donnees locale des projets
+
+## Fonctionnalites couvertes
+
+- lister les projets ;
+- rechercher un projet ;
+- filtrer par categorie ;
+- afficher le detail d'un projet via le routage ;
+- ajouter un projet ;
+- editer un projet ;
+- supprimer un projet ;
+- recharger les donnees depuis le serveur factice.
