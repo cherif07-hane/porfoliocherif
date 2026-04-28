@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/projets";
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api/projets";
 
 function normalizeList(value) {
     if (Array.isArray(value)) {
@@ -30,10 +31,27 @@ function normalizeMultilineList(value) {
         .filter(Boolean);
 }
 
+function normalizeImage(value) {
+    if (!value) {
+        return "/images/projet1.jpg";
+    }
+
+    if (
+        value.startsWith("/") ||
+        value.startsWith("http://") ||
+        value.startsWith("https://") ||
+        value.startsWith("data:image/")
+    ) {
+        return value;
+    }
+
+    return `/${value.replace(/^\.?\//, "")}`;
+}
+
 function normalizeProject(project) {
     return {
         ...project,
-        image: project.image || "/images/projet1.jpg",
+        image: normalizeImage(project.image),
         link: project.link || "#",
         kind: project.kind || "Projet web",
         stack: normalizeList(project.stack),
@@ -42,15 +60,41 @@ function normalizeProject(project) {
 }
 
 async function request(endpoint = "", options = {}) {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        ...options
-    });
+    let response;
+
+    try {
+        response = await fetch(`${API_URL}${endpoint}`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            ...options
+        });
+    } catch (error) {
+        throw new Error(
+            "Impossible de contacter l'API Express. Lance `npm run api` puis recharge la page."
+        );
+    }
 
     if (!response.ok) {
-        throw new Error("La reponse du serveur est invalide.");
+        let errorPayload = null;
+
+        try {
+            errorPayload = await response.json();
+        } catch (_error) {
+            errorPayload = null;
+        }
+
+        if (response.status === 413) {
+            throw new Error(
+                "L'image est trop lourde pour la base locale. Choisis une photo plus legere."
+            );
+        }
+
+        if (errorPayload?.message) {
+            throw new Error(errorPayload.message);
+        }
+
+        throw new Error(`Le serveur a refuse la requete (${response.status}).`);
     }
 
     if (response.status === 204) {

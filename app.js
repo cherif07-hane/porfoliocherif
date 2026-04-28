@@ -1,76 +1,60 @@
-import { fetchTousProjets } from "./api.js";
-import { projets, setProjets } from "./projet.js";
+import "dotenv/config";
+import cors from "cors";
+import express from "express";
+import connectdb from "./config/connectdb.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import { requestLogger } from "./middleware/logger.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
-const homeRefs = {
-    viewLinks: [],
-    views: [],
-    statsProjects: null
-};
+const app = express();
+const PORT = process.env.PORT || 5000;
+const allowedOrigins = (process.env.CLIENT_ORIGIN || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
-function cacheDom() {
-    homeRefs.viewLinks = Array.from(document.querySelectorAll("[data-view-link]"));
-    homeRefs.views = Array.from(document.querySelectorAll("[data-view]"));
-    homeRefs.statsProjects = document.querySelector("#stats-projets");
+if (allowedOrigins.length > 0) {
+    app.use(cors({ origin: allowedOrigins }));
+} else {
+    app.use(cors());
 }
 
-function showView(viewName) {
-    const viewNames = homeRefs.views.map((view) => view.dataset.view).filter(Boolean);
-    const requestedView = viewNames.includes(viewName) ? viewName : "accueil";
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(requestLogger);
 
-    homeRefs.views.forEach((view) => {
-        view.classList.toggle("active", view.dataset.view === requestedView);
-    });
-
-    homeRefs.viewLinks.forEach((link) => {
-        link.classList.toggle("active", link.dataset.viewLink === requestedView);
-    });
-}
-
-function handleHash() {
-    const hash = window.location.hash || "#accueil";
-    showView(hash.replace("#", ""));
-}
-
-function bindEvents() {
-    window.addEventListener("hashchange", handleHash);
-
-    homeRefs.viewLinks.forEach((link) => {
-        link.addEventListener("click", (event) => {
-            const viewName = link.dataset.viewLink || "accueil";
-            const href = link.getAttribute("href") || "";
-            const cibleInterne = href.includes("#");
-
-            if (link.tagName === "A" && cibleInterne) {
-                event.preventDefault();
-                window.location.hash = viewName;
-                return;
-            }
-
-            if (link.tagName === "BUTTON") {
-                window.location.hash = viewName;
-            }
-        });
-    });
-}
-
-async function loadStats() {
-    if (!homeRefs.statsProjects) {
-        return;
-    }
-
-    try {
-        const liste = await fetchTousProjets();
-        setProjets(liste);
-        homeRefs.statsProjects.textContent = String(projets.length);
-    } catch (error) {
-        console.error("Impossible de charger les statistiques projets.", error);
-        homeRefs.statsProjects.textContent = "0";
-    }
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-    cacheDom();
-    bindEvents();
-    handleHash();
-    await loadStats();
+app.get("/", (_req, res) => {
+    return res
+        .type("text/plain")
+        .status(200)
+        .send("API REST Portfolio avec Express JS, Mongo DB et Mongoose.");
 });
+
+app.get("/api/health", (_req, res) => {
+    return res.type("application/json").status(200).json({
+        status: "ok",
+        service: "portfolio-api"
+    });
+});
+
+app.use("/api/projets", projectRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+async function startServer() {
+    try {
+        await connectdb();
+        app.listen(PORT, () => {
+            console.log(`Serveur Express lance sur http://localhost:${PORT}`);
+        });
+    } catch (_error) {
+        process.exit(1);
+    }
+}
+
+if (process.env.NODE_ENV !== "test") {
+    startServer();
+}
+
+export default app;

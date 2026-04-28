@@ -38,7 +38,7 @@ function Dossier({ selectedProjectId }) {
             } catch (loadError) {
                 if (active) {
                     setError(
-                        "Impossible de contacter json-server. Lance npm run api puis recharge la page."
+                        "Impossible de contacter l'API Express. Lance npm run api puis recharge la page."
                     );
                     setStatus("error");
                 }
