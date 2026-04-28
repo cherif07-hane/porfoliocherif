@@ -131,7 +131,7 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
                     <input
                         name="stack"
                         onChange={handleChange}
-                        placeholder="React, Router, json-server"
+                        placeholder="React, Express, Mongo DB"
                         value={formState.stack}
                     />
                 </label>

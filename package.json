@@ -10,12 +10,10 @@
     "preview": "vite preview",
     "api": "node app.js",
     "api:dev": "node --watch app.js",
-    "api:json": "json-server --watch db.json --port 3000",
     "seed": "node scripts/seedProjects.js"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
-    "json-server": "^1.0.0-beta.3",
     "vite": "^8.0.8"
   },
   "dependencies": {

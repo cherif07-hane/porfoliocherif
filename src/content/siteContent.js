@@ -5,7 +5,7 @@ export const profile = {
         "Cette demo refait le portfolio en React JS sous forme de SPA avec gestion de projets, detail, edition, suppression et persistance via json-server.",
     stats: [
         { value: "React JS", label: "interface" },
-        { value: "json-server", label: "API REST factice" },
+        { value: "Express API", label: "donnees projets" },
         { value: "SPA", label: "navigation fluide" }
     ],
     highlights: [

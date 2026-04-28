@@ -74,7 +74,7 @@ CRUD realise:
 ## Demo
 
 1. Demarrer Mongo DB localement ou utiliser une chaine MongoDB Atlas dans `.env`.
-2. Importer les projets existants de `db.json` dans Mongo DB:
+2. Importer les projets de depart dans Mongo DB:
 
 ```powershell
 npm.cmd run seed

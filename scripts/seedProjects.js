@@ -1,8 +1,70 @@
 import "dotenv/config";
-import { readFile } from "node:fs/promises";
 import mongoose from "mongoose";
 import connectdb from "../config/connectdb.js";
 import Project from "../models/projectModel.js";
+
+const initialProjects = [
+    {
+        id: "2023-2024",
+        title: "Deploiement automatise de Windows 11",
+        image: "/images/projet1.jpg",
+        kind: "Projet academique",
+        stack: ["Windows 11", "Deploiement", "Configuration systeme"],
+        description:
+            "Installation automatisee et configuration de Windows 11 avec creation d'images systeme pour accelerer le deploiement et standardiser les postes de travail.",
+        link: "#",
+        points: [
+            "Installation automatisee du systeme",
+            "Configuration initiale standardisee",
+            "Creation d'images systeme reutilisables"
+        ]
+    },
+    {
+        id: "2024-2025",
+        title: "Serveur de messagerie avec Exchange et Roundcube",
+        image: "/images/projet2.jpg",
+        kind: "Projet academique",
+        stack: ["Exchange", "Roundcube", "DNS", "SMTP", "IMAP", "SSL/TLS"],
+        description:
+            "Installation et configuration d'un serveur de messagerie avec mise en place des services DNS, SMTP et IMAP, puis securisation des echanges via SSL/TLS.",
+        link: "#",
+        points: [
+            "Installation du serveur de messagerie",
+            "Configuration DNS, SMTP et IMAP",
+            "Securisation avec SSL/TLS"
+        ]
+    },
+    {
+        id: "2024-2025-voip",
+        title: "Systeme VoIP avec Asterisk",
+        image: "/images/Projet3.jpg",
+        kind: "Projet academique",
+        stack: ["Asterisk", "VoIP", "SIP", "Messagerie vocale"],
+        description:
+            "Deploiement d'une infrastructure VoIP avec configuration des comptes SIP, de la messagerie vocale et du routage des appels.",
+        link: "#",
+        points: [
+            "Mise en place d'une infrastructure VoIP",
+            "Configuration SIP et messagerie vocale",
+            "Routage des appels"
+        ]
+    },
+    {
+        id: "2026",
+        title: "Refactoring d'un portfolio avec React",
+        image: "/images/projet1.jpg",
+        kind: "Projet web",
+        stack: ["HTML", "CSS", "React", "Responsive Design"],
+        description:
+            "Refonte complete d'un site portfolio avec amelioration du design, de la structure visuelle et du comportement responsive sur differents ecrans.",
+        link: "#",
+        points: [
+            "Refonte visuelle complete",
+            "Amelioration du responsive design",
+            "Mise en page plus claire et moderne"
+        ]
+    }
+];
 
 function slugify(value) {
     return String(value || "")
@@ -31,12 +93,7 @@ function normalizeList(value) {
 async function seedProjects() {
     await connectdb();
 
-    const dbFile = new URL("../db.json", import.meta.url);
-    const fileContent = await readFile(dbFile, "utf8");
-    const database = JSON.parse(fileContent);
-    const projects = database.projets || [];
-
-    const operations = projects.map((project) => {
+    const operations = initialProjects.map((project) => {
         const slug = slugify(project.id || project.title);
 
         return {
@@ -68,7 +125,7 @@ async function seedProjects() {
             `${result.upsertedCount + result.modifiedCount} projets importes ou mis a jour.`
         );
     } else {
-        console.log("Aucun projet a importer depuis db.json.");
+        console.log("Aucun projet a importer.");
     }
 
     await mongoose.connection.close();
