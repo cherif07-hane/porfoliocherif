@@ -5,40 +5,66 @@ const API_URL =
 const LOCAL_STORAGE_KEY = "portfolio-projects-local";
 const initialProjects = [
     {
-        id: "2023-2024",
-        title: "Deploiement automatise de Windows 11",
-        image: "/images/projet1.jpg",
-        kind: "Projet academique",
-        stack: ["Windows 11", "Deploiement", "Configuration systeme"],
+        id: "migration-aws-2026",
+        title: "Migration d'une infrastructure On-Premise vers AWS",
+        image: "/images/projet-aws-migration.svg",
+        kind: "Projet cloud",
+        stack: ["AWS", "EC2", "RDS", "S3", "VPC", "IAM"],
         description:
-            "Installation automatisee de Windows 11 avec creation d'images systeme.",
+            "Conception d'une architecture cloud multi-tiers avec reseau securise, services AWS et strategie de disponibilite.",
         link: "#",
         points: [
-            "Installation automatisee",
-            "Configuration standardisee",
-            "Image systeme reutilisable"
+            "Architecture multi-tiers avec EC2, RDS et S3",
+            "Mise en place d'un reseau securise avec VPC et IAM",
+            "Sauvegarde et haute disponibilite"
         ]
     },
     {
-        id: "2024-2025",
-        title: "Serveur de messagerie",
-        image: "/images/projet2.jpg",
-        kind: "Projet academique",
-        stack: ["Exchange", "Roundcube", "DNS", "SMTP", "SSL/TLS"],
+        id: "active-directory-2026",
+        title: "Infrastructure Windows Server avec Active Directory",
+        image: "/images/projet-active-directory.svg",
+        kind: "Projet systeme",
+        stack: ["Windows Server 2022", "AD DS", "DNS", "GPO", "IIS", "HTTPS"],
         description:
-            "Configuration d'un serveur mail avec DNS, SMTP, IMAP et securisation.",
+            "Deploiement d'un domaine Windows Server avec gestion des utilisateurs, politiques de securite et serveur web IIS securise.",
         link: "#",
-        points: ["Serveur mail", "Services DNS et SMTP", "Securisation SSL/TLS"]
+        points: [
+            "Deploiement Active Directory Domain Services",
+            "Configuration DNS, GPO, utilisateurs et groupes",
+            "Mise en place de profils itinerants et politiques de securite",
+            "Deploiement d'un serveur Web IIS securise en HTTPS"
+        ]
     },
     {
-        id: "2024-2025-voip",
-        title: "Systeme VoIP avec Asterisk",
-        image: "/images/Projet3.jpg",
-        kind: "Projet academique",
-        stack: ["Asterisk", "VoIP", "SIP"],
-        description: "Infrastructure VoIP avec comptes SIP et routage des appels.",
+        id: "deploiement-windows-11-mdt",
+        title: "Deploiement automatise Windows 11 avec MDT",
+        image: "/images/projet-mdt-windows11.svg",
+        kind: "Projet systeme",
+        stack: ["Windows 11", "MDT", "Images systeme", "Deploiement"],
+        description:
+            "Automatisation du deploiement de postes Windows 11 avec creation et gestion d'images systeme.",
         link: "#",
-        points: ["Infrastructure VoIP", "Comptes SIP", "Routage des appels"]
+        points: [
+            "Automatisation du deploiement de postes",
+            "Creation et gestion d'images systeme",
+            "Standardisation de la configuration des postes"
+        ]
+    },
+    {
+        id: "infrastructure-reseau-securite",
+        title: "Infrastructure reseau et securite",
+        image: "/images/projet-reseau-securite.svg",
+        kind: "Projet reseau",
+        stack: ["LAN", "WAN", "VPN", "Routeurs", "WiFi", "Securite"],
+        description:
+            "Mise en place d'une infrastructure LAN/WAN avec VPN securise, configuration routeurs et reseaux WiFi.",
+        link: "#",
+        points: [
+            "Mise en place de reseaux LAN/WAN",
+            "Configuration VPN securise pour acces distant",
+            "Configuration routeurs et reseaux WiFi",
+            "Application de bonnes pratiques de securite"
+        ]
     }
 ];
 
@@ -70,7 +96,9 @@ function readLocalProjects() {
             const parsedProjects = JSON.parse(savedProjects);
 
             if (Array.isArray(parsedProjects)) {
-                return parsedProjects.map(normalizeProject);
+                const projects = mergeInitialProjects(parsedProjects.map(normalizeProject));
+                writeLocalProjects(projects);
+                return projects;
             }
         } catch (_error) {
             window.localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -80,6 +108,18 @@ function readLocalProjects() {
     const projects = initialProjects.map(normalizeProject);
     writeLocalProjects(projects);
     return projects;
+}
+
+function mergeInitialProjects(projects) {
+    const projectMap = new Map(projects.map((project) => [project.id, project]));
+    const mergedProjects = [];
+
+    for (const project of initialProjects.map(normalizeProject)) {
+        mergedProjects.push(projectMap.get(project.id) || project);
+        projectMap.delete(project.id);
+    }
+
+    return [...mergedProjects, ...projectMap.values()];
 }
 
 function writeLocalProjects(projects) {

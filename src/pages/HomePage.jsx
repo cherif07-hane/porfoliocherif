@@ -1,5 +1,18 @@
 import { Link } from "react-router-dom";
-import { Award, FolderKanban, GraduationCap, MapPin, Sparkles } from "lucide-react";
+import {
+    Activity,
+    Award,
+    Database,
+    FileText,
+    FolderKanban,
+    GraduationCap,
+    MapPin,
+    Network,
+    Server,
+    ShieldCheck,
+    Sparkles,
+    Terminal
+} from "lucide-react";
 import { focusAreas, journey, profile } from "../content/siteContent";
 
 function HomePage() {
@@ -7,9 +20,24 @@ function HomePage() {
         <section className="home-page">
             <section className="home-hero">
                 <div className="hero-copy">
-                    <p className="eyebrow">{profile.name}</p>
+                    <p className="eyebrow">Portfolio Thierno Cherif HANE</p>
                     <h1>{profile.title}</h1>
                     <p className="hero-text">{profile.summary}</p>
+
+                    <div className="hero-signal-row">
+                        <span>
+                            <ShieldCheck size={16} />
+                            Securite
+                        </span>
+                        <span>
+                            <Network size={16} />
+                            Infrastructure
+                        </span>
+                        <span>
+                            <Terminal size={16} />
+                            Web & API
+                        </span>
+                    </div>
 
                     <div className="hero-actions">
                         <Link className="button button-primary" to="/projets">
@@ -24,8 +52,53 @@ function HomePage() {
                             <Award size={18} />
                             Certifications
                         </Link>
+                        <a
+                            className="button button-outline-light"
+                            href="/docs/CV-Thierno-Cherif-HANE.pdf"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <FileText size={18} />
+                            Mon CV
+                        </a>
                     </div>
                 </div>
+
+                <aside className="hero-network-panel" aria-label="Tableau reseau">
+                    <div className="network-panel-top">
+                        <span className="status-dot" />
+                        <strong>NOC Portfolio</strong>
+                        <span>online</span>
+                    </div>
+
+                    <div className="network-map">
+                        <span className="node node-router">
+                            <Network size={18} />
+                        </span>
+                        <span className="node node-server">
+                            <Server size={18} />
+                        </span>
+                        <span className="node node-db">
+                            <Database size={18} />
+                        </span>
+                        <span className="node node-terminal">
+                            <Terminal size={18} />
+                        </span>
+                    </div>
+
+                    <div className="network-metrics">
+                        <article>
+                            <Activity size={18} />
+                            <span>Disponibilite</span>
+                            <strong>99.9%</strong>
+                        </article>
+                        <article>
+                            <ShieldCheck size={18} />
+                            <span>Approche</span>
+                            <strong>Secure</strong>
+                        </article>
+                    </div>
+                </aside>
 
                 <img
                     className="hero-image"

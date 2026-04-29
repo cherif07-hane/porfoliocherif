@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Infrastructure Windows Server Active Directory</title>
+  <desc id="desc">Illustration d'un domaine Active Directory avec DNS, GPO et utilisateurs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#08111f"/>
+      <stop offset="1" stop-color="#1e3a8a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <g opacity=".12" stroke="#dbeafe" stroke-width="2">
+    <path d="M120 120h960v520H120zM240 120v520M480 120v520M720 120v520M960 120v520M120 250h960M120 380h960M120 510h960"/>
+  </g>
+  <g transform="translate(445 90)">
+    <rect x="0" y="0" width="310" height="145" rx="18" fill="#eff6ff" stroke="#60a5fa" stroke-width="4"/>
+    <rect x="32" y="32" width="70" height="82" rx="8" fill="#2563eb"/>
+    <rect x="126" y="38" width="144" height="16" rx="8" fill="#1e3a8a"/>
+    <rect x="126" y="70" width="118" height="14" rx="7" fill="#64748b"/>
+    <rect x="126" y="98" width="94" height="14" rx="7" fill="#64748b"/>
+    <text x="40" y="175" fill="#bfdbfe" font-family="Segoe UI, Arial" font-size="28" font-weight="900">Windows Server 2022</text>
+  </g>
+  <g stroke="#60a5fa" stroke-width="6" stroke-linecap="round">
+    <path d="M600 250v100"/>
+    <path d="M600 350H310v95"/>
+    <path d="M600 350h290v95"/>
+    <path d="M600 350v95"/>
+  </g>
+  <g font-family="Segoe UI, Arial" font-weight="800">
+    <g transform="translate(175 445)">
+      <rect width="270" height="120" rx="18" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+      <text x="72" y="72" fill="#e0f2fe" font-size="34">DNS</text>
+    </g>
+    <g transform="translate(465 445)">
+      <rect width="270" height="120" rx="18" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+      <text x="72" y="72" fill="#e0f2fe" font-size="34">GPO</text>
+    </g>
+    <g transform="translate(755 445)">
+      <rect width="270" height="120" rx="18" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+      <text x="58" y="72" fill="#e0f2fe" font-size="34">IIS HTTPS</text>
+    </g>
+  </g>
+  <g fill="#93c5fd">
+    <circle cx="270" cy="645" r="22"/><circle cx="340" cy="645" r="22"/><circle cx="410" cy="645" r="22"/>
+    <circle cx="790" cy="645" r="22"/><circle cx="860" cy="645" r="22"/><circle cx="930" cy="645" r="22"/>
+  </g>
+  <text x="80" y="75" fill="#ffffff" font-family="Segoe UI, Arial" font-size="44" font-weight="900">Active Directory</text>
+  <text x="80" y="710" fill="#bfdbfe" font-family="Segoe UI, Arial" font-size="26" font-weight="700">AD DS • DNS • GPO • Utilisateurs • HTTPS</text>
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Infrastructure reseau et securite</title>
+  <desc id="desc">Illustration d'un reseau LAN WAN avec VPN, routeur et WiFi.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#164e63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <g opacity=".12" stroke="#a5f3fc" stroke-width="2">
+    <path d="M60 100h1080M60 220h1080M60 340h1080M60 460h1080M60 580h1080M120 40v660M300 40v660M480 40v660M660 40v660M840 40v660M1020 40v660"/>
+  </g>
+  <g stroke="#67e8f9" stroke-width="8" stroke-linecap="round">
+    <path d="M600 170v120"/>
+    <path d="M600 290H310v118"/>
+    <path d="M600 290h290v118"/>
+    <path d="M600 290v170"/>
+  </g>
+  <g transform="translate(500 105)">
+    <rect width="200" height="110" rx="18" fill="#f8fafc" stroke="#67e8f9" stroke-width="4"/>
+    <circle cx="64" cy="55" r="16" fill="#0f766e"/>
+    <circle cx="112" cy="55" r="16" fill="#2563eb"/>
+    <circle cx="160" cy="55" r="16" fill="#0f172a"/>
+    <text x="52" y="150" fill="#cffafe" font-family="Segoe UI, Arial" font-size="28" font-weight="900">Routeur</text>
+  </g>
+  <g font-family="Segoe UI, Arial" font-weight="900" font-size="32">
+    <g transform="translate(180 410)">
+      <rect width="260" height="130" rx="20" fill="#0f172a" stroke="#22c55e" stroke-width="4"/>
+      <text x="84" y="78" fill="#dcfce7">LAN</text>
+    </g>
+    <g transform="translate(760 410)">
+      <rect width="260" height="130" rx="20" fill="#0f172a" stroke="#38bdf8" stroke-width="4"/>
+      <text x="82" y="78" fill="#e0f2fe">WAN</text>
+    </g>
+    <g transform="translate(470 480)">
+      <rect width="260" height="130" rx="20" fill="#0f172a" stroke="#facc15" stroke-width="4"/>
+      <text x="86" y="78" fill="#fef3c7">VPN</text>
+    </g>
+  </g>
+  <g transform="translate(860 160)" stroke="#bae6fd" stroke-width="8" fill="none" stroke-linecap="round">
+    <path d="M0 110c54-54 142-54 196 0"/>
+    <path d="M36 146c34-34 90-34 124 0"/>
+    <path d="M75 182c12-12 34-12 46 0"/>
+  </g>
+  <path d="M232 210l76 80 132-142" fill="none" stroke="#22c55e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="80" y="75" fill="#ffffff" font-family="Segoe UI, Arial" font-size="44" font-weight="900">Infrastructure reseau securisee</text>
+  <text x="82" y="700" fill="#cffafe" font-family="Segoe UI, Arial" font-size="26" font-weight="700">LAN/WAN • VPN • Routeurs • WiFi • Acces distant</text>
+</svg>

@@ -1,14 +1,14 @@
 export const profile = {
     name: "Thierno Cherif HANE",
-    title: "Systemes, reseaux et developpement web",
+    title: "Systemes, reseaux, cloud et developpement web",
     summary:
-        "Portfolio professionnel pour presenter mes projets, diplomes, certifications et competences techniques.",
+        "Etudiant en systemes et reseaux oriente cloud computing, avec des projets en AWS, Windows Server, deploiement MDT et infrastructure securisee.",
     about:
-        "Je suis un profil oriente systemes, reseaux et developpement web. Mon parcours me permet de comprendre a la fois l'infrastructure, les services reseau et la construction d'applications modernes.",
+        "Je prepare la certification AWS Cloud Practitioner avec l'accompagnement de Orange Digital Center. Mon objectif est de renforcer mes competences en cloud et cybersecurite pour evoluer vers un poste de Cloud Engineer ou DevOps.",
     stats: [
-        { value: "Systemes", label: "Windows et Linux" },
-        { value: "Reseaux", label: "DNS, SMTP, VoIP" },
-        { value: "Web", label: "Frontend et API" }
+        { value: "AWS", label: "EC2, S3, RDS, VPC" },
+        { value: "Windows", label: "AD DS, DNS, GPO" },
+        { value: "Reseaux", label: "LAN/WAN, VPN, WiFi" }
     ],
     highlights: [
         "Architecture en composants reutilisables",
@@ -20,22 +20,25 @@ export const profile = {
         {
             id: "01",
             title: "Systemes",
-            description: "Windows, Linux, maintenance et deploiement."
+            description:
+                "Windows Server 2019/2022, Active Directory, DNS, GPO, Linux et sauvegardes."
         },
         {
             id: "02",
             title: "Reseaux",
-            description: "TCP/IP, DNS, DHCP, HTTP, SMTP et securisation."
+            description: "TCP/IP, DNS, DHCP, VLAN, LAN/WAN, VPN securise, routeurs et WiFi."
         },
         {
             id: "03",
-            title: "Developpement",
-            description: "HTML, CSS, JavaScript, React et Git."
+            title: "Securite",
+            description:
+                "Acces distant securise, politiques de securite, HTTPS, profils et droits utilisateurs."
         },
         {
             id: "04",
-            title: "Projets",
-            description: "CRUD, interface claire et responsive."
+            title: "Developpement",
+            description:
+                "Interfaces web, API REST, MongoDB, espace admin et portfolio deployable."
         }
     ]
 };
@@ -53,14 +56,14 @@ export const journey = [
         period: "2024 - 2025",
         title: "Reseaux et services",
         description:
-            "Travail sur DNS, messagerie, securisation, VoIP et services d'entreprise."
+            "Travail sur DNS, DHCP, VLAN, VPN securise, routeurs, WiFi et services d'entreprise."
     },
     {
         id: "parcours-03",
-        period: "2025 - 2026",
-        title: "Developpement web full stack",
+        period: "2026",
+        title: "Cloud computing et DevOps",
         description:
-            "Creation d'interfaces web, API REST, base de donnees Mongo DB et espace admin."
+            "Preparation AWS Cloud Practitioner, conception VPC, EC2, RDS, S3, IAM et architectures haute disponibilite."
     }
 ];
 
@@ -74,45 +77,45 @@ export const focusAreas = [
 export const diplomas = [
     {
         id: "diplome-01",
-        title: "Formation systemes et reseaux",
-        school: "ODC / Parcours informatique",
-        period: "2024 - 2026",
+        title: "Licence Informatique Systemes et Reseaux",
+        school: "Institut Superieur Informatique, Dakar",
+        period: "2022 - 2025",
         description:
-            "Administration systeme, reseaux, securisation, services web et projets techniques."
+            "Formation orientee administration systeme, reseaux, services informatiques et infrastructures."
     },
     {
         id: "diplome-02",
-        title: "Developpement web full stack",
-        school: "Parcours pratique",
-        period: "2025 - 2026",
+        title: "Preparation AWS Cloud Practitioner",
+        school: "Orange Digital Center",
+        period: "2026",
         description:
-            "HTML, CSS, JavaScript, React, Express, Mongo DB et deploiement d'applications."
+            "Preparation en cours autour des services AWS, du cloud computing, de la securite et de la scalabilite."
     }
 ];
 
 export const certifications = [
     {
         id: "certification-01",
-        title: "React JS",
-        issuer: "Projet portfolio",
+        title: "AWS Cloud Practitioner",
+        issuer: "Preparation en cours",
         period: "2026",
         description:
-            "Composants, routage, formulaires controles, appels API et interface responsive."
+            "Fondamentaux cloud, EC2, S3, RDS, VPC, IAM, haute disponibilite et bonnes pratiques AWS."
     },
     {
         id: "certification-02",
-        title: "Express JS et Mongo DB",
-        issuer: "API REST",
+        title: "Administration Windows Server",
+        issuer: "Projets techniques",
         period: "2026",
         description:
-            "CRUD, routes, middlewares, modeles Mongoose et protection admin des modifications."
+            "Active Directory, DNS, GPO, gestion utilisateurs/groupes, securite et IIS HTTPS."
     },
     {
         id: "certification-03",
-        title: "Administration systeme et reseau",
-        issuer: "Projets academiques",
+        title: "Reseaux et securite",
+        issuer: "Projets d'infrastructure",
         period: "2024 - 2025",
         description:
-            "Windows, Linux, DNS, SMTP, VoIP, Asterisk et bases de securisation."
+            "LAN/WAN, VPN securise, configuration routeurs, reseaux WiFi et support utilisateur niveau 1/2."
     }
 ];

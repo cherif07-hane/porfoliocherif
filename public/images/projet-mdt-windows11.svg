@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Deploiement Windows 11 avec MDT</title>
+  <desc id="desc">Illustration d'un deploiement automatise de postes Windows 11.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#061628"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <g opacity=".15" stroke="#ccfbf1" stroke-width="2">
+    <path d="M0 160h1200M0 320h1200M0 480h1200M0 640h1200M200 0v760M400 0v760M600 0v760M800 0v760M1000 0v760"/>
+  </g>
+  <g transform="translate(88 142)">
+    <rect width="320" height="210" rx="20" fill="#ecfeff" stroke="#67e8f9" stroke-width="4"/>
+    <rect x="48" y="42" width="224" height="126" rx="10" fill="#0f172a"/>
+    <path d="M82 78h70v58H82zM168 78h70v58h-70z" fill="#38bdf8"/>
+    <text x="58" y="260" fill="#e0f2fe" font-family="Segoe UI, Arial" font-size="30" font-weight="900">Image MDT</text>
+  </g>
+  <path d="M435 250h270" stroke="#99f6e4" stroke-width="10" stroke-linecap="round"/>
+  <path d="M680 220l50 30-50 30" fill="none" stroke="#99f6e4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(760 130)" fill="#ecfeff" stroke="#67e8f9" stroke-width="4">
+    <rect width="150" height="105" rx="12"/>
+    <rect x="185" y="0" width="150" height="105" rx="12"/>
+    <rect x="92" y="155" width="150" height="105" rx="12"/>
+  </g>
+  <g fill="#0f172a">
+    <rect x="790" y="160" width="90" height="48" rx="8"/>
+    <rect x="975" y="160" width="90" height="48" rx="8"/>
+    <rect x="882" y="315" width="90" height="48" rx="8"/>
+  </g>
+  <g stroke="#99f6e4" stroke-width="5" stroke-linecap="round">
+    <path d="M835 282v42M1020 282v42M927 395v42"/>
+  </g>
+  <text x="90" y="600" fill="#ffffff" font-family="Segoe UI, Arial" font-size="46" font-weight="900">Deploiement Windows 11 automatise</text>
+  <text x="92" y="645" fill="#ccfbf1" font-family="Segoe UI, Arial" font-size="26" font-weight="700">MDT • Images systeme • Standardisation des postes</text>
+</svg>
