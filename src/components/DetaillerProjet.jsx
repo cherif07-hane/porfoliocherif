@@ -1,17 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ExternalLink, Pencil } from "lucide-react";
 
-function DetaillerProjet({ project, missingProjectId, onEdit }) {
+function DetaillerProjet({
+    backPath = "/projets",
+    isAdmin = false,
+    project,
+    missingProjectId,
+    onEdit
+}) {
     const navigate = useNavigate();
 
     if (!project && !missingProjectId) {
         return (
             <aside className="panel detail-panel">
-                <p className="eyebrow">DetaillerProjet</p>
+                <p className="eyebrow">Detail</p>
                 <h2>Selectionne un projet</h2>
-                <p>
-                    Clique sur le libelle d'un projet pour afficher ses informations
-                    completes dans le composant detail.
-                </p>
             </aside>
         );
     }
@@ -20,12 +23,13 @@ function DetaillerProjet({ project, missingProjectId, onEdit }) {
         return (
             <aside className="panel detail-panel">
                 <p className="eyebrow">Projet introuvable</p>
-                <h2>Aucun projet ne correspond a {missingProjectId}</h2>
+                <h2>{missingProjectId}</h2>
                 <button
                     className="button button-ghost"
                     type="button"
-                    onClick={() => navigate("/projets")}
+                    onClick={() => navigate(backPath)}
                 >
+                    <ArrowLeft size={17} />
                     Annuler
                 </button>
             </aside>
@@ -34,15 +38,16 @@ function DetaillerProjet({ project, missingProjectId, onEdit }) {
 
     return (
         <aside className="panel detail-panel">
-            <p className="eyebrow">DetaillerProjet</p>
-            <img className="detail-image" src={project.image} alt={project.title} />
+            <p className="eyebrow">Detail</p>
+            <div className="detail-cover">
+                <img className="detail-image" src={project.image} alt={project.title} />
+                <div className="detail-meta">
+                    <span className="pill">{project.kind}</span>
+                    <span className="project-id">{project.id}</span>
+                </div>
+            </div>
             <h2>{project.title}</h2>
             <p className="detail-summary">{project.description}</p>
-
-            <div className="detail-meta">
-                <span className="pill">{project.kind}</span>
-                <span className="project-id">{project.id}</span>
-            </div>
 
             <section>
                 <h3>Technologies</h3>
@@ -56,7 +61,7 @@ function DetaillerProjet({ project, missingProjectId, onEdit }) {
             </section>
 
             <section>
-                <h3>Informations completes</h3>
+                <h3>Points cles</h3>
                 <ul className="detail-list">
                     {project.points.map((point) => (
                         <li key={`${project.id}-${point}`}>{point}</li>
@@ -68,17 +73,21 @@ function DetaillerProjet({ project, missingProjectId, onEdit }) {
                 <button
                     className="button button-ghost"
                     type="button"
-                    onClick={() => navigate("/projets")}
+                    onClick={() => navigate(backPath)}
                 >
+                    <ArrowLeft size={17} />
                     Annuler
                 </button>
-                <button
-                    className="button button-secondary"
-                    type="button"
-                    onClick={() => onEdit(project)}
-                >
-                    Editer
-                </button>
+                {isAdmin ? (
+                    <button
+                        className="button button-secondary"
+                        type="button"
+                        onClick={() => onEdit(project)}
+                    >
+                        <Pencil size={17} />
+                        Editer
+                    </button>
+                ) : null}
                 {project.link && project.link !== "#" ? (
                     <a
                         className="button button-primary"
@@ -86,6 +95,7 @@ function DetaillerProjet({ project, missingProjectId, onEdit }) {
                         rel="noreferrer"
                         target="_blank"
                     >
+                        <ExternalLink size={17} />
                         Ouvrir
                     </a>
                 ) : null}

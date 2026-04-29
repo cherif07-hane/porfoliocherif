@@ -1,18 +1,22 @@
 import { Link } from "react-router-dom";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
-function Projet({ project, onDelete, onEdit }) {
+function Projet({ detailBasePath = "/projets", isAdmin = false, project, onDelete, onEdit }) {
+    const detailPath = `${detailBasePath}/${project.id}`;
+
     return (
         <article className="project-card">
-            <img src={project.image} alt={project.title} />
-
-            <div className="project-card-top">
-                <span className="pill">{project.kind}</span>
-                <span className="project-id">{project.id}</span>
+            <div className="project-card-media">
+                <img src={project.image} alt={project.title} />
+                <div className="project-card-top">
+                    <span className="pill">{project.kind}</span>
+                    <span className="project-id">{project.id}</span>
+                </div>
             </div>
 
             <div className="project-card-body">
                 <h3>
-                    <Link to={`/projets/${project.id}`}>{project.title}</Link>
+                    <Link to={detailPath}>{project.title}</Link>
                 </h3>
                 <p>{project.description}</p>
             </div>
@@ -26,23 +30,30 @@ function Projet({ project, onDelete, onEdit }) {
             </div>
 
             <div className="card-actions">
-                <Link className="button button-ghost" to={`/projets/${project.id}`}>
-                    Detail
+                <Link className="button button-ghost" to={detailPath}>
+                    <Eye size={17} />
+                    Details
                 </Link>
-                <button
-                    className="button button-secondary"
-                    type="button"
-                    onClick={() => onEdit(project)}
-                >
-                    Editer
-                </button>
-                <button
-                    className="button button-danger"
-                    type="button"
-                    onClick={() => onDelete(project)}
-                >
-                    Supprimer
-                </button>
+                {isAdmin ? (
+                    <>
+                        <button
+                            className="button button-secondary"
+                            type="button"
+                            onClick={() => onEdit(project)}
+                        >
+                            <Pencil size={17} />
+                            Modifier
+                        </button>
+                        <button
+                            className="button button-danger"
+                            type="button"
+                            onClick={() => onDelete(project)}
+                        >
+                            <Trash2 size={17} />
+                            Supprimer
+                        </button>
+                    </>
+                ) : null}
             </div>
         </article>
     );

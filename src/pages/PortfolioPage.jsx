@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
 import Dossier from "../components/Dossier";
 
-function PortfolioPage() {
+function PortfolioPage({ isAdmin = false, view = "list" }) {
     const { projectId } = useParams();
 
-    return <Dossier selectedProjectId={projectId || ""} />;
+    return <Dossier isAdmin={isAdmin} selectedProjectId={projectId || ""} view={view} />;
 }
 
 export default PortfolioPage;

@@ -6,6 +6,7 @@ import {
     getProjects,
     updateProject
 } from "../controllers/projectController.js";
+import { requireAdmin } from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
@@ -23,12 +24,12 @@ router.param("id", (req, res, next, id) => {
     return next();
 });
 
-router.route("/").get(getProjects).post(createProject);
+router.route("/").get(getProjects).post(requireAdmin, createProject);
 router
     .route("/:id")
     .get(getProjectById)
-    .put(updateProject)
-    .patch(updateProject)
-    .delete(deleteProject);
+    .put(requireAdmin, updateProject)
+    .patch(requireAdmin, updateProject)
+    .delete(requireAdmin, deleteProject);
 
 export default router;

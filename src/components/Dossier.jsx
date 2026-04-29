@@ -1,5 +1,6 @@
 import { startTransition, useDeferredValue, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus, RefreshCw, Search } from "lucide-react";
 import AjouterProjet from "./AjouterProjet";
 import DetaillerProjet from "./DetaillerProjet";
 import Projet from "./Projet";
@@ -10,7 +11,7 @@ import {
     updateProject
 } from "../services/projectsApi";
 
-function Dossier({ selectedProjectId }) {
+function Dossier({ isAdmin = false, selectedProjectId, view = "list" }) {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [search, setSearch] = useState("");
@@ -21,6 +22,9 @@ function Dossier({ selectedProjectId }) {
     const [editingProject, setEditingProject] = useState(null);
     const [notice, setNotice] = useState("");
     const deferredSearch = useDeferredValue(search);
+    const isFormView = view === "form";
+    const listPath = isAdmin ? "/admin/projets" : "/projets";
+    const formPath = "/admin/ajout-projet";
 
     useEffect(() => {
         let active = true;
@@ -38,7 +42,8 @@ function Dossier({ selectedProjectId }) {
             } catch (loadError) {
                 if (active) {
                     setError(
-                        "Impossible de contacter l'API Express. Lance npm run api puis recharge la page."
+                        loadError.message ||
+                            "Impossible de charger les projets. Lance npm run api."
                     );
                     setStatus("error");
                 }
@@ -64,8 +69,34 @@ function Dossier({ selectedProjectId }) {
         return () => window.clearTimeout(timer);
     }, [notice]);
 
+    useEffect(() => {
+        if (!isFormView) {
+            return;
+        }
+
+        if (!selectedProjectId) {
+            setEditingProject(null);
+            return;
+        }
+
+        if (status !== "ready") {
+            return;
+        }
+
+        const projectToEdit =
+            projects.find((project) => project.id === selectedProjectId) || null;
+
+        setEditingProject(projectToEdit);
+
+        if (!projectToEdit) {
+            setError(`Projet "${selectedProjectId}" introuvable.`);
+        }
+    }, [isFormView, projects, selectedProjectId, status]);
+
     const selectedProject =
-        projects.find((project) => project.id === selectedProjectId) || null;
+        !isFormView && selectedProjectId
+            ? projects.find((project) => project.id === selectedProjectId) || null
+            : null;
 
     const visibleProjects = projects.filter((project) => {
         const text = `${project.title} ${project.description} ${project.kind} ${project.stack.join(" ")}`.toLowerCase();
@@ -83,54 +114,54 @@ function Dossier({ selectedProjectId }) {
             const data = await fetchProjects();
             setProjects(data);
             setStatus("ready");
+            return data;
         } catch (loadError) {
             setStatus("error");
-            setError("Le rechargement des projets a echoue.");
+            setError(loadError.message || "Le rechargement des projets a echoue.");
+            return [];
         }
     }
 
     function handleStartEdit(project) {
         setEditingProject(project);
-        document
-            .getElementById("project-form-panel")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        navigate(`${formPath}/${project.id}`);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function handleCancelEdit() {
         setEditingProject(null);
+        navigate(formPath);
     }
 
     async function handleSubmitProject(formData) {
         setSaving(true);
+        setError("");
 
         try {
             if (editingProject) {
                 const updated = await updateProject(editingProject.id, formData);
-                setProjects((current) =>
-                    current.map((project) =>
-                        project.id === updated.id ? updated : project
-                    )
-                );
-                setEditingProject(updated);
-                setNotice("Projet modifie avec succes.");
-                navigate(`/projets/${updated.id}`);
+                await reloadProjects();
+                setEditingProject(null);
+                setNotice("Projet modifie.");
+                navigate(`${listPath}/${updated.id}`);
             } else {
                 const created = await createProject(formData);
-                setProjects((current) => [created, ...current]);
-                setNotice("Projet ajoute avec succes.");
-                navigate(`/projets/${created.id}`);
+                await reloadProjects();
+                setNotice("Projet ajoute.");
+                navigate(`${listPath}/${created.id}`);
             }
         } catch (saveError) {
-            setError("L'enregistrement du projet a echoue.");
+            setError(
+                saveError.message ||
+                    "Enregistrement impossible. Verifie que npm run api est actif."
+            );
         } finally {
             setSaving(false);
         }
     }
 
     async function handleDeleteProject(project) {
-        const confirmed = window.confirm(
-            `Supprimer le projet "${project.title}" du portfolio ?`
-        );
+        const confirmed = window.confirm(`Supprimer "${project.title}" ?`);
 
         if (!confirmed) {
             return;
@@ -138,20 +169,19 @@ function Dossier({ selectedProjectId }) {
 
         try {
             await deleteProject(project.id);
-            setProjects((current) =>
-                current.filter((item) => item.id !== project.id)
-            );
-            setNotice("Projet supprime avec succes.");
+            await reloadProjects();
+            setNotice("Projet supprime.");
 
             if (selectedProjectId === project.id) {
-                navigate("/projets");
+                navigate(listPath);
             }
 
             if (editingProject?.id === project.id) {
                 setEditingProject(null);
+                navigate(formPath);
             }
         } catch (deleteError) {
-            setError("La suppression a echoue.");
+            setError(deleteError.message || "Suppression impossible.");
         }
     }
 
@@ -168,44 +198,102 @@ function Dossier({ selectedProjectId }) {
         });
     }
 
+    if (isFormView) {
+        const isLoadingEdit = selectedProjectId && status === "loading";
+        const isMissingEdit = selectedProjectId && status === "ready" && !editingProject;
+
+        if (!isAdmin) {
+            return (
+                <section className="workspace">
+                    <div className="admin-required reveal-card">
+                        <p className="eyebrow">Admin</p>
+                        <h1>Connexion requise</h1>
+                        <p>Seul l'administrateur peut ajouter ou modifier les projets.</p>
+                        <Link className="button button-primary" to="/admin">
+                            Connexion admin
+                        </Link>
+                    </div>
+                </section>
+            );
+        }
+
+        return (
+            <section className="workspace workspace-form">
+                <div className="page-title-row">
+                    <div>
+                        <p className="eyebrow">Ajout Projet</p>
+                        <h1>
+                            {editingProject || selectedProjectId
+                                ? "Modifier le projet"
+                                : "Ajouter un projet"}
+                        </h1>
+                    </div>
+
+                    <Link className="button button-secondary" to={listPath}>
+                        <ArrowLeft size={18} />
+                        Liste projet
+                    </Link>
+                </div>
+
+                {error ? <p className="feedback error">{error}</p> : null}
+                {notice ? <p className="feedback success">{notice}</p> : null}
+
+                {isLoadingEdit ? <div className="panel">Chargement...</div> : null}
+
+                {isMissingEdit ? (
+                    <div className="empty-state">
+                        <h2>Projet introuvable</h2>
+                        <Link className="button button-primary" to={listPath}>
+                            <ArrowLeft size={18} />
+                            Retour liste
+                        </Link>
+                    </div>
+                ) : null}
+
+                {!isLoadingEdit && !isMissingEdit ? (
+                    <AjouterProjet
+                        busy={saving}
+                        mode={editingProject ? "edit" : "create"}
+                        onCancelEdit={handleCancelEdit}
+                        onSubmit={handleSubmitProject}
+                        project={editingProject}
+                    />
+                ) : null}
+            </section>
+        );
+    }
+
     return (
         <section className="workspace">
-            <div className="hero-panel">
-                <p className="eyebrow">Dossier</p>
-                <h1>Gestionnaire React du portfolio</h1>
-                <p>
-                    Le composant <strong>Dossier</strong> stocke, ajoute, recherche,
-                    supprime, recharge et orchestre l'affichage detaille des projets.
-                </p>
-            </div>
+            <div className="page-title-row">
+                <div>
+                    <p className="eyebrow">Liste projet</p>
+                    <h1>{isAdmin ? "Gestion des projets" : "Projets realises"}</h1>
+                </div>
 
-            <div className="stats-row">
-                <article className="stat-card">
-                    <strong>{projects.length}</strong>
-                    <span>projets total</span>
-                </article>
-                <article className="stat-card">
-                    <strong>{visibleProjects.length}</strong>
-                    <span>resultats visibles</span>
-                </article>
-                <article className="stat-card">
-                    <strong>{categories.length - 1}</strong>
-                    <span>categories</span>
-                </article>
+                {isAdmin ? (
+                    <Link className="button button-primary" to={formPath}>
+                        <Plus size={18} />
+                        Ajouter
+                    </Link>
+                ) : null}
             </div>
 
             <div className="toolbar">
                 <label>
                     Recherche
-                    <input
-                        onChange={handleSearchChange}
-                        placeholder="Rechercher un projet"
-                        value={search}
-                    />
+                    <span className="field-with-icon">
+                        <Search size={18} />
+                        <input
+                            onChange={handleSearchChange}
+                            placeholder="Nom, techno, type..."
+                            value={search}
+                        />
+                    </span>
                 </label>
 
                 <label>
-                    Filtre
+                    Type
                     <select onChange={handleKindChange} value={filterKind}>
                         {categories.map((category) => (
                             <option key={category} value={category}>
@@ -220,6 +308,7 @@ function Dossier({ selectedProjectId }) {
                     onClick={reloadProjects}
                     type="button"
                 >
+                    <RefreshCw size={18} />
                     Recharger
                 </button>
             </div>
@@ -230,18 +319,21 @@ function Dossier({ selectedProjectId }) {
             <div className="workspace-grid">
                 <section className="panel projects-panel">
                     <div className="panel-heading">
-                        <p className="eyebrow">Projet</p>
                         <h2>Liste des projets</h2>
-                        <p>
-                            Chaque libelle de projet est une ancre React Router qui
-                            ouvre le detail complet.
-                        </p>
                     </div>
 
-                    {status === "loading" ? <p>Chargement des projets...</p> : null}
+                    {status === "loading" ? <p>Chargement...</p> : null}
 
                     {status === "ready" && visibleProjects.length === 0 ? (
-                        <p>Aucun projet ne correspond a la recherche.</p>
+                        <div className="empty-state">
+                            <h2>Aucun projet</h2>
+                            {isAdmin ? (
+                                <Link className="button button-primary" to={formPath}>
+                                    <Plus size={18} />
+                                    Ajouter un projet
+                                </Link>
+                            ) : null}
+                        </div>
                     ) : null}
 
                     <div className="projects-grid">
@@ -251,26 +343,20 @@ function Dossier({ selectedProjectId }) {
                                 onDelete={handleDeleteProject}
                                 onEdit={handleStartEdit}
                                 project={project}
+                                detailBasePath={listPath}
+                                isAdmin={isAdmin}
                             />
                         ))}
                     </div>
                 </section>
 
-                <div className="side-column">
-                    <AjouterProjet
-                        busy={saving}
-                        mode={editingProject ? "edit" : "create"}
-                        onCancelEdit={handleCancelEdit}
-                        onSubmit={handleSubmitProject}
-                        project={editingProject}
-                    />
-
-                    <DetaillerProjet
-                        missingProjectId={selectedProjectId}
-                        onEdit={handleStartEdit}
-                        project={selectedProject}
-                    />
-                </div>
+                <DetaillerProjet
+                    backPath={listPath}
+                    isAdmin={isAdmin}
+                    missingProjectId={selectedProjectId}
+                    onEdit={handleStartEdit}
+                    project={selectedProject}
+                />
             </div>
         </section>
     );

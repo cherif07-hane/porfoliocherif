@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { RotateCcw, Save, X } from "lucide-react";
 
+const DEFAULT_IMAGE = "/images/projet1.jpg";
+const MAX_IMAGE_BYTES = 75 * 1024;
 const EMPTY_FORM = {
     id: "",
     title: "",
-    image: "/images/projet1.jpg",
+    image: DEFAULT_IMAGE,
     kind: "Projet web",
     stack: "",
     description: "",
@@ -37,11 +40,97 @@ function slugify(value) {
         .replace(/^-+|-+$/g, "");
 }
 
+function isDataImage(value) {
+    return typeof value === "string" && value.startsWith("data:image/");
+}
+
+function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("Impossible de lire cette image."));
+        image.src = src;
+    });
+}
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            if (typeof reader.result !== "string") {
+                reject(new Error("Impossible de charger cette image."));
+                return;
+            }
+
+            resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+            reject(new Error("Impossible de charger cette image."));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function compressImage(file) {
+    const source = await readFileAsDataUrl(file);
+    const image = await loadImage(source);
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+        throw new Error("Le navigateur ne peut pas compresser cette image.");
+    }
+
+    let width = image.naturalWidth || image.width;
+    let height = image.naturalHeight || image.height;
+    const maxDimension = 1280;
+
+    if (width > maxDimension || height > maxDimension) {
+        const ratio = Math.min(maxDimension / width, maxDimension / height);
+        width = Math.max(1, Math.round(width * ratio));
+        height = Math.max(1, Math.round(height * ratio));
+    }
+
+    for (let scale = 1; scale >= 0.45; scale -= 0.15) {
+        const scaledWidth = Math.max(1, Math.round(width * scale));
+        const scaledHeight = Math.max(1, Math.round(height * scale));
+
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, scaledWidth, scaledHeight);
+        context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
+
+        for (let quality = 0.82; quality >= 0.45; quality -= 0.12) {
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+            if (dataUrl.length <= MAX_IMAGE_BYTES) {
+                return dataUrl;
+            }
+        }
+    }
+
+    throw new Error(
+        "Image trop lourde pour la base locale. Choisis une photo plus legere."
+    );
+}
+
 function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
     const [formState, setFormState] = useState(EMPTY_FORM);
+    const [uploadError, setUploadError] = useState("");
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         setFormState(toFormState(project));
+        setUploadError("");
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     }, [project]);
 
     function handleChange(event) {
@@ -50,6 +139,44 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
             ...current,
             [name]: value
         }));
+    }
+
+    async function handleImagePick(event) {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            setUploadError("Choisis un fichier image valide.");
+            event.target.value = "";
+            return;
+        }
+
+        try {
+            const compressedImage = await compressImage(file);
+            setFormState((current) => ({
+                ...current,
+                image: compressedImage
+            }));
+            setUploadError("");
+        } catch (error) {
+            setUploadError(error.message || "Impossible de charger cette image.");
+            event.target.value = "";
+        }
+    }
+
+    function handleResetImage() {
+        setFormState((current) => ({
+            ...current,
+            image: DEFAULT_IMAGE
+        }));
+        setUploadError("");
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     }
 
     async function handleSubmit(event) {
@@ -67,6 +194,11 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
 
         if (mode === "create") {
             setFormState(EMPTY_FORM);
+            setUploadError("");
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         }
     }
 
@@ -75,46 +207,71 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
     return (
         <section className="panel form-panel" id="project-form-panel">
             <div className="panel-heading">
-                <p className="eyebrow">{isEditing ? "Edition" : "AjouterProjet"}</p>
-                <h2>{isEditing ? "Modifier un projet" : "Ajouter un projet"}</h2>
-                <p>
-                    Le composant <strong>AjouterProjet</strong> gere les champs du
-                    formulaire et transmet les donnees au composant Dossier.
-                </p>
+                <p className="eyebrow">{isEditing ? "Edition" : "Nouveau"}</p>
+                <h2>Infos projet</h2>
             </div>
 
             <form className="project-form" onSubmit={handleSubmit}>
                 <label>
-                    Identifiant
+                    ID
                     <input
                         disabled={isEditing}
                         name="id"
                         onChange={handleChange}
-                        placeholder="portfolio-react"
+                        placeholder="portfolio-thierno"
                         value={formState.id}
                     />
                 </label>
 
                 <label>
-                    Libelle
+                    Titre
                     <input
                         required
                         name="title"
                         onChange={handleChange}
-                        placeholder="Refonte du portfolio React"
+                        placeholder="Refonte du portfolio"
                         value={formState.title}
                     />
                 </label>
 
                 <label>
-                    Image
+                    Image importee
+                    <input
+                        accept="image/*"
+                        ref={fileInputRef}
+                        type="file"
+                        onChange={handleImagePick}
+                    />
+                </label>
+
+                <label>
+                    Chemin image
                     <input
                         name="image"
                         onChange={handleChange}
-                        placeholder="/images/projet1.jpg"
-                        value={formState.image}
+                        placeholder="/images/projet1.jpg ou image importee"
+                        value={isDataImage(formState.image) ? "" : formState.image}
                     />
                 </label>
+
+                <div className="image-picker-preview full-span">
+                    <img src={formState.image || DEFAULT_IMAGE} alt="Apercu du projet" />
+                    <div className="image-picker-copy">
+                        <strong>Apercu</strong>
+                        {isDataImage(formState.image) ? (
+                            <p>Photo importee.</p>
+                        ) : null}
+                        {uploadError ? <p className="feedback error">{uploadError}</p> : null}
+                        <button
+                            className="button button-ghost"
+                            type="button"
+                            onClick={handleResetImage}
+                        >
+                            <RotateCcw size={17} />
+                            Image par defaut
+                        </button>
+                    </div>
+                </div>
 
                 <label>
                     Type
@@ -159,7 +316,7 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
                 </label>
 
                 <label className="full-span">
-                    Points forts
+                    Points cles
                     <textarea
                         name="points"
                         onChange={handleChange}
@@ -171,7 +328,8 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
 
                 <div className="form-actions full-span">
                     <button className="button button-primary" disabled={busy} type="submit">
-                        {busy ? "Enregistrement..." : isEditing ? "Mettre a jour" : "Ajouter"}
+                        <Save size={18} />
+                        {busy ? "Enregistrement..." : isEditing ? "Enregistrer" : "Ajouter"}
                     </button>
 
                     {isEditing ? (
@@ -180,7 +338,8 @@ function AjouterProjet({ mode, project, onCancelEdit, onSubmit, busy }) {
                             type="button"
                             onClick={onCancelEdit}
                         >
-                            Annuler l'edition
+                            <X size={18} />
+                            Annuler
                         </button>
                     ) : null}
                 </div>

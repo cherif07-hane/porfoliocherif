@@ -24,6 +24,9 @@ PORT=5000
 MONGO_URI=mongodb://127.0.0.1:27017/fullstack_portfolio
 CLIENT_ORIGIN=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api/projets
+VITE_ADMIN_API_URL=http://localhost:5000/api/admin
+ADMIN_PASSWORD=change-moi-avant-deployer
+ADMIN_SECRET=une-cle-longue-et-secrete
 ```
 
 ## Structure API
@@ -71,6 +74,9 @@ CRUD realise:
 - Modifier un projet donne: `PUT /api/projets/:id`
 - Supprimer un projet: `DELETE /api/projets/:id`
 
+Les routes `POST`, `PUT`, `PATCH` et `DELETE` sont protegees par un token admin.
+La connexion admin se fait via `POST /api/admin/login` avec `ADMIN_PASSWORD`.
+
 ## Demo
 
 1. Demarrer Mongo DB localement ou utiliser une chaine MongoDB Atlas dans `.env`.
@@ -91,6 +97,10 @@ npm.cmd run api
 ```powershell
 npm.cmd run dev
 ```
+
+Connexion admin locale: si `ADMIN_PASSWORD` n'est pas defini, le mot de passe
+de developpement est `admin123`. En production, il faut obligatoirement definir
+`ADMIN_PASSWORD` et `ADMIN_SECRET`.
 
 5. Tester l'API:
 
@@ -114,6 +124,18 @@ Invoke-RestMethod http://localhost:5000/api/projets `
 ```powershell
 npm.cmd run build
 ```
+
+## Deploiement
+
+- Frontend: deployer `dist/` apres `npm.cmd run build`.
+- SPA: le fichier `public/_redirects` permet aux routes React de fonctionner
+  sur Netlify. Sur une autre plateforme, configurer une redirection vers
+  `index.html`.
+- API: deployer le serveur Express avec `MONGO_URI`, `CLIENT_ORIGIN`,
+  `ADMIN_PASSWORD` et `ADMIN_SECRET`.
+- Base de donnees: utiliser MongoDB Atlas ou une instance MongoDB accessible par
+  le serveur.
+- Securite: ne jamais publier les valeurs reelles de `.env`.
 
 ## References
 

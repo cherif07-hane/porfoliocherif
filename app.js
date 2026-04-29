@@ -4,6 +4,7 @@ import express from "express";
 import connectdb from "./config/connectdb.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/logger.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 
 const app = express();
@@ -38,6 +39,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/projets", projectRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
