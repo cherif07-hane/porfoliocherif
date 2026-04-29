@@ -1,5 +1,5 @@
 const ADMIN_API_URL =
-    import.meta.env.VITE_ADMIN_API_URL || "http://localhost:5000/api/admin";
+    import.meta.env.VITE_ADMIN_API_URL || "/api/admin";
 const ADMIN_TOKEN_KEY = "portfolio-admin-token";
 const LOCAL_ADMIN_PASSWORD = "admin123";
 

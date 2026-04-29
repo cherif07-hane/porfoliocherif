@@ -1,7 +1,7 @@
 import { getAdminToken, isAdminAuthenticated } from "./adminAuth";
 
 const API_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api/projets";
+    import.meta.env.VITE_API_URL || "/api/projets";
 const LOCAL_STORAGE_KEY = "portfolio-projects-local";
 const initialProjects = [
     {
