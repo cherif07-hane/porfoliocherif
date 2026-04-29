@@ -54,6 +54,7 @@ function App() {
                 </NavLink>
 
                 <button
+                    aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
                     aria-controls="main-navigation"
                     aria-expanded={isMenuOpen}
                     className="menu-toggle"
@@ -61,7 +62,7 @@ function App() {
                     onClick={() => setIsMenuOpen((current) => !current)}
                 >
                     <Menu size={20} />
-                    Menu
+                    <span>Menu</span>
                 </button>
 
                 <nav

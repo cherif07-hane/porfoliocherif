@@ -148,7 +148,9 @@ img {
     display: none;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
     min-height: 42px;
+    width: auto;
     gap: 8px;
     padding: 0 14px;
     border: 1px solid var(--line);
@@ -1538,11 +1540,12 @@ img {
     }
 
     .brand {
-        flex: 1 1 auto;
+        flex: 1 1 0;
     }
 
     .menu-toggle {
         display: inline-flex;
+        width: auto;
     }
 
     .site-nav {
@@ -1584,23 +1587,32 @@ img {
         padding: 10px 10px 24px;
     }
 
-    .site-header,
     .site-footer,
     .page-title-row {
         flex-direction: column;
     }
 
     .site-header {
-        align-items: stretch;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .brand,
+    .brand {
+        flex: 1 1 0;
+        width: auto;
+    }
+
     .menu-toggle {
-        width: 100%;
+        min-width: 44px;
+        width: auto;
+        padding: 0 12px;
     }
 
     .site-nav {
         display: none;
+        flex-basis: 100%;
         grid-template-columns: 1fr;
         width: 100%;
     }
@@ -1746,6 +1758,15 @@ img {
 
     .site-header {
         padding: 8px;
+    }
+
+    .menu-toggle {
+        width: 44px;
+        padding: 0;
+    }
+
+    .menu-toggle span {
+        display: none;
     }
 
     .hero-copy h1,
