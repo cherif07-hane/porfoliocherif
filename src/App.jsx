@@ -5,6 +5,7 @@ import {
     GraduationCap,
     Home,
     LayoutDashboard,
+    Menu,
     PlusCircle
 } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
@@ -21,9 +22,14 @@ import {
 
 function App() {
     const [isAdmin, setIsAdmin] = useState(isAdminAuthenticated);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     function getNavClass({ isActive }) {
         return isActive ? "active-nav" : undefined;
+    }
+
+    function closeMenu() {
+        setIsMenuOpen(false);
     }
 
     async function handleAdminLogin(password) {
@@ -47,29 +53,52 @@ function App() {
                     </div>
                 </NavLink>
 
-                <nav className="site-nav" aria-label="Navigation principale">
-                    <NavLink className={getNavClass} to="/">
+                <button
+                    aria-controls="main-navigation"
+                    aria-expanded={isMenuOpen}
+                    className="menu-toggle"
+                    type="button"
+                    onClick={() => setIsMenuOpen((current) => !current)}
+                >
+                    <Menu size={20} />
+                    Menu
+                </button>
+
+                <nav
+                    className={`site-nav ${isMenuOpen ? "is-open" : ""}`}
+                    id="main-navigation"
+                    aria-label="Navigation principale"
+                >
+                    <NavLink className={getNavClass} to="/" onClick={closeMenu}>
                         <Home size={18} />
                         Accueil
                     </NavLink>
-                    <NavLink className={getNavClass} to="/diplomes">
+                    <NavLink className={getNavClass} to="/diplomes" onClick={closeMenu}>
                         <GraduationCap size={18} />
                         Diplomes
                     </NavLink>
-                    <NavLink className={getNavClass} to="/certifications">
+                    <NavLink
+                        className={getNavClass}
+                        to="/certifications"
+                        onClick={closeMenu}
+                    >
                         <Award size={18} />
                         Certifications
                     </NavLink>
-                    <NavLink className={getNavClass} to="/projets">
+                    <NavLink className={getNavClass} to="/projets" onClick={closeMenu}>
                         <FolderKanban size={18} />
                         Projets
                     </NavLink>
-                    <NavLink className={getNavClass} to="/admin">
+                    <NavLink className={getNavClass} to="/admin" onClick={closeMenu}>
                         <LayoutDashboard size={18} />
                         Admin
                     </NavLink>
                     {isAdmin ? (
-                        <NavLink className={getNavClass} to="/admin/ajout-projet">
+                        <NavLink
+                            className={getNavClass}
+                            to="/admin/ajout-projet"
+                            onClick={closeMenu}
+                        >
                             <PlusCircle size={18} />
                             Ajouter
                         </NavLink>

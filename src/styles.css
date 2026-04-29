@@ -144,6 +144,21 @@ img {
     background: var(--surface-soft);
 }
 
+.menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    gap: 8px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 850;
+}
+
 .site-nav a {
     display: inline-flex;
     align-items: center;
@@ -578,6 +593,7 @@ img {
 
 .button:focus-visible,
 .site-nav a:focus-visible,
+.menu-toggle:focus-visible,
 .social-link:focus-visible,
 .footer-contact a:focus-visible {
     outline: 3px solid rgba(36, 87, 214, 0.28);
@@ -1516,28 +1532,31 @@ img {
 
     .site-header {
         position: static;
-        align-items: stretch;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 12px;
     }
 
+    .brand {
+        flex: 1 1 auto;
+    }
+
+    .menu-toggle {
+        display: inline-flex;
+    }
+
     .site-nav {
-        display: flex;
-        flex-wrap: nowrap;
-        width: 100%;
-        overflow-x: auto;
-        padding: 6px;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-    }
-
-    .site-nav::-webkit-scrollbar {
         display: none;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 6px;
+        overflow: visible;
+        animation: revealUp 0.22s ease both;
     }
 
-    .site-nav a {
-        flex: 0 0 auto;
-        min-width: max-content;
-        scroll-snap-align: start;
+    .site-nav.is-open {
+        display: flex;
     }
 
     .home-hero {
@@ -1568,12 +1587,26 @@ img {
     .site-header,
     .site-footer,
     .page-title-row {
-        align-items: stretch;
         flex-direction: column;
     }
 
-    .site-nav {
+    .site-header {
+        align-items: stretch;
+    }
+
+    .brand,
+    .menu-toggle {
         width: 100%;
+    }
+
+    .site-nav {
+        display: none;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .site-nav.is-open {
+        display: grid;
     }
 
     .site-nav a {
