@@ -1508,9 +1508,61 @@ img {
     }
 }
 
+@media (max-width: 900px) {
+    .app-shell {
+        width: 100%;
+        padding: 12px 12px 28px;
+    }
+
+    .site-header {
+        position: static;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .site-nav {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        overflow-x: auto;
+        padding: 6px;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+    }
+
+    .site-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .site-nav a {
+        flex: 0 0 auto;
+        min-width: max-content;
+        scroll-snap-align: start;
+    }
+
+    .home-hero {
+        min-height: auto;
+    }
+
+    .hero-copy {
+        max-width: none;
+        padding: 32px;
+    }
+
+    .hero-network-panel {
+        margin: 0 32px 32px;
+    }
+
+    .projects-grid,
+    .credential-grid,
+    .admin-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 760px) {
     .app-shell {
-        padding-inline: 12px;
+        padding: 10px 10px 24px;
     }
 
     .site-header,
@@ -1521,14 +1573,26 @@ img {
     }
 
     .site-nav {
-        display: grid;
-        grid-template-columns: 1fr;
         width: 100%;
     }
 
-    .site-nav a,
+    .site-nav a {
+        min-height: 40px;
+        padding: 0 12px;
+        font-size: 0.92rem;
+    }
+
+    .brand img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .brand strong {
+        font-size: 0.94rem;
+    }
+
     .button {
-        width: 100%;
+        min-height: 42px;
     }
 
     .admin-hero,
@@ -1542,15 +1606,40 @@ img {
     }
 
     .home-hero {
-        min-height: 390px;
+        border-radius: 0;
+        margin-inline: -10px;
     }
 
     .hero-copy {
-        padding: 28px;
+        padding: 28px 18px 18px;
+    }
+
+    .hero-actions,
+    .hero-signal-row {
+        width: 100%;
+    }
+
+    .hero-actions .button {
+        flex: 1 1 150px;
+    }
+
+    .hero-signal-row span {
+        flex: 1 1 135px;
+        justify-content: center;
     }
 
     .hero-network-panel {
         margin: 0 18px 18px;
+        padding: 14px;
+    }
+
+    .network-map {
+        min-height: 180px;
+    }
+
+    .node {
+        width: 40px;
+        height: 40px;
     }
 
     .network-metrics {
@@ -1559,7 +1648,11 @@ img {
 
     .hero-copy h1,
     .page-title-row h1 {
-        font-size: 2rem;
+        font-size: 1.9rem;
+    }
+
+    .hero-text {
+        font-size: 0.98rem;
     }
 
     .toolbar,
@@ -1567,6 +1660,24 @@ img {
     .image-picker-preview,
     .about-stats {
         grid-template-columns: 1fr;
+    }
+
+    .toolbar {
+        padding: 10px;
+    }
+
+    .projects-grid,
+    .credential-grid,
+    .admin-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .project-card img {
+        height: 210px;
+    }
+
+    .card-actions .button {
+        flex: 1 1 140px;
     }
 
     .full-span {
@@ -1592,5 +1703,58 @@ img {
 
     .social-links {
         justify-content: flex-start;
+    }
+}
+
+@media (max-width: 460px) {
+    body {
+        background-attachment: scroll, scroll;
+    }
+
+    .site-header {
+        padding: 8px;
+    }
+
+    .hero-copy h1,
+    .page-title-row h1 {
+        font-size: 1.65rem;
+    }
+
+    .page-content,
+    .home-page,
+    .workspace {
+        gap: 14px;
+    }
+
+    .page-title-row,
+    .home-about,
+    .journey-card,
+    .credential-card,
+    .login-card,
+    .admin-required {
+        padding: 16px;
+    }
+
+    .hero-actions .button,
+    .card-actions .button,
+    .form-actions .button {
+        flex-basis: 100%;
+    }
+
+    .project-card img {
+        height: 180px;
+    }
+
+    .network-panel-top {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .network-panel-top span:last-child {
+        margin-left: 0;
+    }
+
+    .footer-brand {
+        align-items: flex-start;
     }
 }
