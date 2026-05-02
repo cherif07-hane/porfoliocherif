@@ -12,6 +12,16 @@ function createLocalAdminToken() {
     return `${window.btoa(JSON.stringify(payload)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "")}.local`;
 }
 
+function canUseLocalAdminFallback(password) {
+    return import.meta.env.DEV && password === LOCAL_ADMIN_PASSWORD;
+}
+
+function saveLocalAdminSession() {
+    const token = createLocalAdminToken();
+    window.localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    return token;
+}
+
 export function getAdminToken() {
     return window.localStorage.getItem(ADMIN_TOKEN_KEY) || "";
 }
@@ -59,10 +69,8 @@ export async function loginAdmin(password) {
             body: JSON.stringify({ password })
         });
     } catch (error) {
-        if (import.meta.env.DEV && password === LOCAL_ADMIN_PASSWORD) {
-            const token = createLocalAdminToken();
-            window.localStorage.setItem(ADMIN_TOKEN_KEY, token);
-            return token;
+        if (canUseLocalAdminFallback(password)) {
+            return saveLocalAdminSession();
         }
 
         throw new Error("API admin indisponible.");
@@ -75,6 +83,10 @@ export async function loginAdmin(password) {
             errorPayload = await response.json();
         } catch (_error) {
             errorPayload = null;
+        }
+
+        if (canUseLocalAdminFallback(password) && (response.status >= 500 || !errorPayload)) {
+            return saveLocalAdminSession();
         }
 
         throw new Error(errorPayload?.message || "Connexion admin impossible.");
