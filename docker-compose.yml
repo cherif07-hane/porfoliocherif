@@ -15,7 +15,9 @@ services:
       start_period: 10s
 
   api:
-    build: .
+    build:
+      context: .
+      target: development
     image: richef07/porfoliocherif-api:latest
     container_name: portfolio-api
     restart: unless-stopped
@@ -43,7 +45,9 @@ services:
       start_period: 10s
 
   frontend:
-    build: .
+    build:
+      context: .
+      target: development
     image: richef07/porfoliocherif-frontend:latest
     container_name: portfolio-frontend
     restart: unless-stopped

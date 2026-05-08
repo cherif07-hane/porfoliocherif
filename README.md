@@ -133,6 +133,20 @@ Services disponibles:
 - API Express: http://localhost:5000
 - Mongo DB: mongodb://localhost:27017/fullstack_portfolio
 
+Concepts Docker utilises dans le projet:
+
+- Installation et demarrage de Docker Desktop avec WSL 2.
+- Images et conteneurs: `pull`, `build`, `run`, `ps`, `logs`, `exec`, `stop`,
+  `rm`, `images`, `rmi`, `inspect`.
+- Reseau Docker Compose personnalise par defaut avec DNS integre entre
+  services: `api`, `frontend` et `mongo`.
+- Dockerfile multi-stage avec les etapes `deps`, `development`, `build` et
+  `production`.
+- Publication Docker Hub des images `richef07/porfoliocherif-api:latest` et
+  `richef07/porfoliocherif-frontend:latest`.
+- Stockage avec volume nomme `mongo_data` pour Mongo DB et bind mount du code
+  source en developpement.
+
 Importer les projets de depart dans Mongo DB apres le demarrage:
 
 ```powershell
@@ -173,6 +187,12 @@ Avec le `docker-compose.yml`, les images peuvent aussi etre construites et pouss
 ```powershell
 docker compose build
 docker compose push api frontend
+```
+
+Construire l'image de production multi-stage:
+
+```powershell
+docker build --target production -t richef07/porfoliocherif-api:production .
 ```
 
 Verifier les images locales:
