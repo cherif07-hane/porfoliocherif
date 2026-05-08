@@ -1,4 +1,5 @@
-import { connectServerlessDb } from "../../lib/serverlessDb.js";
+import { cloneInitialProjects } from "../../lib/initialProjects.js";
+import { connectServerlessDb, hasServerlessDbUri } from "../../lib/serverlessDb.js";
 import {
     buildProjectPayload,
     escapeRegExp,
@@ -8,6 +9,30 @@ import {
     sendJson
 } from "../../lib/serverlessUtils.js";
 import Project from "../../models/projectModel.js";
+
+function getStaticProjects(req) {
+    const { kind, q, limit = "50" } = req.query;
+    let projects = cloneInitialProjects();
+
+    if (kind) {
+        projects = projects.filter((project) => project.kind === String(kind).trim());
+    }
+
+    if (q) {
+        const search = new RegExp(escapeRegExp(String(q).trim()), "i");
+        projects = projects.filter((project) =>
+            [
+                project.title,
+                project.description,
+                project.kind,
+                ...(project.stack || [])
+            ].some((value) => search.test(String(value)))
+        );
+    }
+
+    const safeLimit = Math.min(Number.parseInt(limit, 10) || 50, 100);
+    return projects.slice(0, safeLimit);
+}
 
 async function getProjects(req, res) {
     const { kind, q, limit = "50", sort = "-createdAt" } = req.query;
@@ -61,6 +86,17 @@ async function createProject(req, res) {
 
 export default async function handler(req, res) {
     try {
+        if (!hasServerlessDbUri()) {
+            if (req.method === "GET") {
+                return sendJson(res, 200, getStaticProjects(req));
+            }
+
+            return sendJson(res, 503, {
+                message:
+                    "Base MongoDB non configuree. Ajoute MONGO_URI sur Vercel pour activer l'ecriture."
+            });
+        }
+
         await connectServerlessDb();
 
         if (req.method === "GET") {

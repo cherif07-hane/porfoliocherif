@@ -1,4 +1,5 @@
-import { connectServerlessDb } from "../../lib/serverlessDb.js";
+import { cloneInitialProjects } from "../../lib/initialProjects.js";
+import { connectServerlessDb, hasServerlessDbUri } from "../../lib/serverlessDb.js";
 import {
     buildProjectPayload,
     handleServerlessError,
@@ -11,6 +12,11 @@ import Project from "../../models/projectModel.js";
 
 function getRouteSlug(req) {
     return slugify(req.query.id);
+}
+
+function getStaticProject(req) {
+    const routeSlug = getRouteSlug(req);
+    return cloneInitialProjects().find((project) => slugify(project.id) === routeSlug);
 }
 
 async function getProjectById(req, res) {
@@ -67,6 +73,25 @@ async function deleteProject(req, res) {
 
 export default async function handler(req, res) {
     try {
+        if (!hasServerlessDbUri()) {
+            if (req.method === "GET") {
+                const project = getStaticProject(req);
+
+                if (!project) {
+                    return sendJson(res, 404, {
+                        message: "Projet introuvable."
+                    });
+                }
+
+                return sendJson(res, 200, project);
+            }
+
+            return sendJson(res, 503, {
+                message:
+                    "Base MongoDB non configuree. Ajoute MONGO_URI sur Vercel pour activer l'ecriture."
+            });
+        }
+
         await connectServerlessDb();
 
         if (req.method === "GET") {

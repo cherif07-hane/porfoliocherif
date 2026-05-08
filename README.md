@@ -119,6 +119,68 @@ Invoke-RestMethod http://localhost:5000/api/projets `
   -Body '{"id":"api-express","title":"API Express Portfolio","description":"API REST avec Express et Mongo DB","kind":"Projet web","stack":["Express","Mongo DB","Mongoose"],"points":["Routage","Middleware","CRUD"]}'
 ```
 
+## Docker
+
+Lancer toute l'application avec Docker Compose:
+
+```powershell
+docker compose up --build
+```
+
+Services disponibles:
+
+- Frontend React/Vite: http://localhost:5173
+- API Express: http://localhost:5000
+- Mongo DB: mongodb://localhost:27017/fullstack_portfolio
+
+Importer les projets de depart dans Mongo DB apres le demarrage:
+
+```powershell
+docker compose exec api npm run seed
+```
+
+Arreter les containers:
+
+```powershell
+docker compose down
+```
+
+Supprimer aussi les donnees Mongo DB locales:
+
+```powershell
+docker compose down -v
+```
+
+Connexion admin Docker en developpement: `admin123`.
+
+### Publication sur Docker Hub
+
+Docker Hub est deja utilise pour recuperer l'image officielle `mongo:7`.
+Pour publier les images du portfolio, se connecter a Docker Hub puis taguer et pousser les images:
+
+```powershell
+docker login
+
+docker tag porfoliocherif-api:latest richef07/porfoliocherif-api:latest
+docker tag porfoliocherif-frontend:latest richef07/porfoliocherif-frontend:latest
+
+docker push richef07/porfoliocherif-api:latest
+docker push richef07/porfoliocherif-frontend:latest
+```
+
+Avec le `docker-compose.yml`, les images peuvent aussi etre construites et poussees directement:
+
+```powershell
+docker compose build
+docker compose push api frontend
+```
+
+Verifier les images locales:
+
+```powershell
+docker images
+```
+
 ## Build
 
 ```powershell
@@ -128,11 +190,13 @@ npm.cmd run build
 ## Deploiement
 
 - Frontend: deployer `dist/` apres `npm.cmd run build`.
-- SPA: le fichier `public/_redirects` permet aux routes React de fonctionner
-  sur Netlify. Sur une autre plateforme, configurer une redirection vers
-  `index.html`.
-- API: deployer le serveur Express avec `MONGO_URI`, `CLIENT_ORIGIN`,
-  `ADMIN_PASSWORD` et `ADMIN_SECRET`.
+- Vercel: le dossier `api/` expose les fonctions serverless
+  `/api/projets`, `/api/projets/:id`, `/api/admin/login` et `/api/health`.
+  Le fichier `vercel.json` renvoie les routes React vers `index.html` tout en
+  laissant les fonctions API prioritaires.
+- API: definir `MONGO_URI`, `ADMIN_PASSWORD` et `ADMIN_SECRET` dans les
+  variables d'environnement Vercel. Sans `MONGO_URI`, l'API reste en lecture
+  seule et sert les projets de depart.
 - Base de donnees: utiliser MongoDB Atlas ou une instance MongoDB accessible par
   le serveur.
 - Securite: ne jamais publier les valeurs reelles de `.env`.
