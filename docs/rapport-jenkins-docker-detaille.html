@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Rapport detaille - Jenkins avec Docker</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            color: #172033;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12.5px;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #10213f;
+            line-height: 1.25;
+            margin: 0 0 10px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 14px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #d8e2f2;
+            font-size: 20px;
+            margin-top: 28px;
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-size: 15.5px;
+            margin-top: 18px;
+        }
+
+        p {
+            margin: 0 0 9px;
+        }
+
+        ul,
+        ol {
+            margin: 8px 0 12px 22px;
+            padding: 0;
+        }
+
+        li {
+            margin: 4px 0;
+        }
+
+        code {
+            background: #eef3fa;
+            border-radius: 4px;
+            color: #0d3b66;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 11.5px;
+            padding: 1px 4px;
+        }
+
+        pre {
+            background: #101828;
+            border-radius: 7px;
+            color: #f8fafc;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 10.8px;
+            line-height: 1.45;
+            margin: 10px 0 14px;
+            overflow-wrap: anywhere;
+            padding: 12px;
+            white-space: pre-wrap;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            page-break-inside: avoid;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #cbd7e6;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1fb;
+            color: #10213f;
+            font-weight: 700;
+        }
+
+        .cover {
+            background: #f4f7fb;
+            border: 1px solid #d8e2f2;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            padding: 28px;
+        }
+
+        .subtitle {
+            color: #43536c;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: 1fr 1fr;
+            margin-top: 18px;
+        }
+
+        .meta div,
+        .note,
+        .warning,
+        .success {
+            border-radius: 7px;
+            padding: 10px 12px;
+        }
+
+        .meta div {
+            background: #ffffff;
+            border: 1px solid #d8e2f2;
+        }
+
+        .note {
+            background: #f6f9fd;
+            border-left: 4px solid #3375c9;
+            margin: 12px 0;
+        }
+
+        .warning {
+            background: #fff8e6;
+            border-left: 4px solid #c67c00;
+            margin: 12px 0;
+        }
+
+        .success {
+            background: #eefaf3;
+            border-left: 4px solid #2d8a4e;
+            margin: 12px 0;
+        }
+
+        .page-break {
+            break-before: page;
+        }
+
+        .small {
+            color: #53627a;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <section class="cover">
+        <h1>Rapport detaille : Jenkins avec Docker</h1>
+        <p class="subtitle">Installation, configuration, integration CI/CD du projet <strong>fullStack_portfolio</strong>, role de chaque element et exemples pratiques.</p>
+        <div class="meta">
+            <div><strong>Projet</strong><br>Portfolio React/Vite + API Express + MongoDB</div>
+            <div><strong>Date de realisation</strong><br>15 mai 2026</div>
+            <div><strong>Environnement</strong><br>Windows + PowerShell + Docker Desktop</div>
+            <div><strong>Resultat</strong><br>Jenkins actif sur http://localhost:8080</div>
+        </div>
+    </section>
+
+    <h2>1. Objectif du travail</h2>
+    <p>
+        L'objectif etait de mettre en place Jenkins pour automatiser le cycle CI/CD du projet fil rouge.
+        Le projet contient un frontend React/Vite, une API Express, une connexion MongoDB et des scripts npm.
+        Jenkins doit pouvoir recuperer le code, installer les dependances, verifier le projet, construire le frontend,
+        archiver le resultat et preparer une image Docker.
+    </p>
+    <p>
+        Docker a ete utilise pour installer Jenkins rapidement sans modifier l'installation Windows.
+        Jenkins tourne donc dans un conteneur, avec ses donnees conservees dans un volume Docker.
+    </p>
+
+    <h2>2. Resume tres court du resultat final</h2>
+    <table>
+        <tr>
+            <th>Element</th>
+            <th>Resultat obtenu</th>
+            <th>A quoi ca sert</th>
+        </tr>
+        <tr>
+            <td>Jenkins</td>
+            <td>Conteneur Docker lance, accessible sur <code>http://localhost:8080</code></td>
+            <td>Interface CI/CD pour executer les builds automatiquement.</td>
+        </tr>
+        <tr>
+            <td>Volume Docker</td>
+            <td><code>jenkins_home</code></td>
+            <td>Conserver les donnees Jenkins meme si le conteneur est supprime.</td>
+        </tr>
+        <tr>
+            <td>Reseau Docker</td>
+            <td><code>jenkins</code></td>
+            <td>Isoler et organiser les conteneurs Jenkins.</td>
+        </tr>
+        <tr>
+            <td>Jenkinsfile</td>
+            <td>Ajoute a la racine du projet</td>
+            <td>Decrire le pipeline Jenkins sous forme de code.</td>
+        </tr>
+        <tr>
+            <td>Dockerfile du projet</td>
+            <td>Image <code>fullstack-portfolio:jenkins-demo</code> construite</td>
+            <td>Preparer une version deployable du projet.</td>
+        </tr>
+        <tr>
+            <td>Documentation</td>
+            <td><code>docs/jenkins.md</code> et ce rapport PDF</td>
+            <td>Expliquer l'installation, la demo et l'integration.</td>
+        </tr>
+    </table>
+
+    <h2>3. Concepts importants avant les commandes</h2>
+    <table>
+        <tr>
+            <th>Concept</th>
+            <th>Explication simple</th>
+            <th>Exemple dans ce projet</th>
+        </tr>
+        <tr>
+            <td>Docker</td>
+            <td>Plateforme qui execute des applications dans des conteneurs isoles.</td>
+            <td>Jenkins est execute dans un conteneur au lieu d'etre installe directement sur Windows.</td>
+        </tr>
+        <tr>
+            <td>Image Docker</td>
+            <td>Modele de base qui contient tout ce qu'il faut pour lancer une application.</td>
+            <td><code>jenkins/jenkins:lts-jdk21</code> est l'image officielle utilisee pour Jenkins.</td>
+        </tr>
+        <tr>
+            <td>Conteneur</td>
+            <td>Instance en execution d'une image Docker.</td>
+            <td>Le conteneur s'appelle <code>jenkins</code>.</td>
+        </tr>
+        <tr>
+            <td>Volume</td>
+            <td>Stockage persistant gere par Docker.</td>
+            <td><code>jenkins_home</code> conserve les jobs, plugins, utilisateurs et configurations Jenkins.</td>
+        </tr>
+        <tr>
+            <td>Reseau Docker</td>
+            <td>Reseau virtuel qui permet aux conteneurs de communiquer.</td>
+            <td><code>jenkins</code> est le reseau cree pour organiser Jenkins.</td>
+        </tr>
+        <tr>
+            <td>Port mapping</td>
+            <td>Association entre un port du PC et un port du conteneur.</td>
+            <td><code>-p 8080:8080</code> permet d'ouvrir Jenkins depuis le navigateur.</td>
+        </tr>
+        <tr>
+            <td>CI/CD</td>
+            <td>Automatisation de l'integration, des tests, du build et du deploiement.</td>
+            <td>Jenkins execute <code>npm ci</code>, <code>npm run build</code> et archive <code>dist/</code>.</td>
+        </tr>
+    </table>
+
+    <h2>4. Verification de Docker Desktop</h2>
+    <p>
+        Avant d'installer Jenkins, il fallait verifier que Docker Desktop etait lance et que le moteur Docker repondait.
+        Sans le moteur Docker, la commande <code>docker run</code> ne peut pas creer le conteneur Jenkins.
+    </p>
+    <pre>docker info</pre>
+    <p><strong>A quoi ca sert :</strong> afficher l'etat du client Docker et du serveur Docker.</p>
+    <p><strong>Exemple de resultat utile :</strong></p>
+    <pre>Server:
+ Containers: 3
+ Server Version: 29.4.2
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: x86_64</pre>
+    <div class="success">
+        La verification a confirme que Docker Desktop etait actif. Jenkins pouvait donc etre installe avec Docker.
+    </div>
+
+    <h2>5. Verification d'une ancienne installation Jenkins</h2>
+    <p>
+        Avant de creer un nouveau conteneur, j'ai verifie s'il existait deja un conteneur, un volume ou un reseau Jenkins.
+        Cela evite d'ecraser une installation existante.
+    </p>
+    <pre>docker ps -a --filter name=jenkins --format "{{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker volume ls --filter name=jenkins_home --format "{{.Name}}"
+docker network ls --filter name=jenkins --format "{{.Name}}"</pre>
+    <table>
+        <tr>
+            <th>Commande</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>docker ps -a --filter name=jenkins</code></td>
+            <td>Voir si un conteneur Jenkins existe deja, meme s'il est arrete.</td>
+            <td>Si rien ne s'affiche, aucun conteneur Jenkins n'existe.</td>
+        </tr>
+        <tr>
+            <td><code>docker volume ls --filter name=jenkins_home</code></td>
+            <td>Voir si un volume Jenkins existe deja.</td>
+            <td>Si <code>jenkins_home</code> existe, les donnees Jenkins sont deja presentes.</td>
+        </tr>
+        <tr>
+            <td><code>docker network ls --filter name=jenkins</code></td>
+            <td>Voir si le reseau Jenkins existe deja.</td>
+            <td>Si rien ne s'affiche, on peut creer le reseau.</td>
+        </tr>
+    </table>
+    <p>
+        Dans ce cas, aucune ancienne installation Jenkins n'a ete detectee. L'installation pouvait donc commencer proprement.
+    </p>
+
+    <h2>6. Creation du reseau Docker Jenkins</h2>
+    <pre>docker network create jenkins</pre>
+    <p><strong>A quoi ca sert :</strong> creer un reseau Docker nomme <code>jenkins</code>.</p>
+    <p>
+        Meme si Jenkins peut fonctionner avec le reseau Docker par defaut, creer un reseau dedie rend l'installation plus propre.
+        Plus tard, si on ajoute un agent Jenkins, un conteneur Docker-in-Docker ou un autre service, on pourra les connecter au meme reseau.
+    </p>
+    <p><strong>Exemple concret :</strong> un agent Jenkins pourrait rejoindre ce reseau pour communiquer avec le serveur Jenkins.</p>
+    <pre>docker run --network jenkins mon-agent-jenkins</pre>
+
+    <h2>7. Creation du volume Jenkins</h2>
+    <pre>docker volume create jenkins_home</pre>
+    <p><strong>A quoi ca sert :</strong> creer un stockage persistant pour Jenkins.</p>
+    <p>
+        Jenkins stocke ses donnees dans <code>/var/jenkins_home</code> a l'interieur du conteneur.
+        Si ces donnees restent uniquement dans le conteneur, elles peuvent etre perdues en cas de suppression du conteneur.
+        Le volume <code>jenkins_home</code> evite ce probleme.
+    </p>
+    <table>
+        <tr>
+            <th>Sans volume</th>
+            <th>Avec volume</th>
+        </tr>
+        <tr>
+            <td>Suppression du conteneur = risque de perdre la configuration Jenkins.</td>
+            <td>Suppression du conteneur = les donnees restent dans <code>jenkins_home</code>.</td>
+        </tr>
+    </table>
+    <p><strong>Exemple :</strong> les plugins installes, les jobs crees et les utilisateurs Jenkins sont gardes dans ce volume.</p>
+
+    <h2>8. Installation et lancement de Jenkins</h2>
+    <pre>docker run --name jenkins -d `
+  --restart=on-failure `
+  --network jenkins `
+  -p 8080:8080 -p 50000:50000 `
+  -v jenkins_home:/var/jenkins_home `
+  jenkins/jenkins:lts-jdk21</pre>
+    <p>Cette commande est le coeur de l'installation Jenkins.</p>
+    <table>
+        <tr>
+            <th>Partie de la commande</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple ou effet</th>
+        </tr>
+        <tr>
+            <td><code>docker run</code></td>
+            <td>Creer et demarrer un conteneur depuis une image Docker.</td>
+            <td>Docker cree le conteneur Jenkins.</td>
+        </tr>
+        <tr>
+            <td><code>--name jenkins</code></td>
+            <td>Donner un nom simple au conteneur.</td>
+            <td>On peut ensuite utiliser <code>docker logs jenkins</code>.</td>
+        </tr>
+        <tr>
+            <td><code>-d</code></td>
+            <td>Lancer le conteneur en arriere-plan.</td>
+            <td>Le terminal reste disponible pendant que Jenkins tourne.</td>
+        </tr>
+        <tr>
+            <td><code>--restart=on-failure</code></td>
+            <td>Relancer Jenkins automatiquement si le conteneur s'arrete a cause d'une erreur.</td>
+            <td>Utile pour garder Jenkins disponible apres un crash.</td>
+        </tr>
+        <tr>
+            <td><code>--network jenkins</code></td>
+            <td>Connecter le conteneur au reseau Docker cree plus haut.</td>
+            <td>Jenkins appartient au reseau <code>jenkins</code>.</td>
+        </tr>
+        <tr>
+            <td><code>-p 8080:8080</code></td>
+            <td>Exposer l'interface web Jenkins.</td>
+            <td>Acces navigateur : <code>http://localhost:8080</code>.</td>
+        </tr>
+        <tr>
+            <td><code>-p 50000:50000</code></td>
+            <td>Exposer le port utilise par certains agents Jenkins.</td>
+            <td>Utile si Jenkins pilote des agents externes.</td>
+        </tr>
+        <tr>
+            <td><code>-v jenkins_home:/var/jenkins_home</code></td>
+            <td>Connecter le volume persistant au dossier Jenkins.</td>
+            <td>Les donnees Jenkins restent sauvegardees.</td>
+        </tr>
+        <tr>
+            <td><code>jenkins/jenkins:lts-jdk21</code></td>
+            <td>Image Jenkins officielle LTS avec Java 21.</td>
+            <td>Docker la telecharge si elle n'existe pas localement.</td>
+        </tr>
+    </table>
+    <p><strong>Resultat :</strong> Docker a telecharge l'image Jenkins puis a demarre le conteneur.</p>
+
+    <h2>9. Verification du conteneur Jenkins</h2>
+    <pre>docker ps --filter name=jenkins --format "{{.Names}}\t{{.Status}}\t{{.Ports}}"</pre>
+    <p><strong>A quoi ca sert :</strong> verifier que le conteneur Jenkins tourne et que les ports sont ouverts.</p>
+    <p><strong>Exemple de resultat obtenu :</strong></p>
+    <pre>jenkins    Up 2 minutes    0.0.0.0:8080-&gt;8080/tcp, 0.0.0.0:50000-&gt;50000/tcp</pre>
+    <p>
+        Cette ligne signifie que Jenkins est en marche et que le port 8080 du PC redirige bien vers le port 8080 du conteneur.
+    </p>
+
+    <h2>10. Lecture des logs Jenkins</h2>
+    <pre>docker logs --tail 80 jenkins</pre>
+    <p><strong>A quoi ca sert :</strong> voir les messages de demarrage Jenkins et recuperer les informations importantes.</p>
+    <p>
+        Les logs indiquent que Jenkins demarre, charge ses plugins internes, prepare l'assistant d'installation et genere un mot de passe initial.
+    </p>
+    <pre>Jenkins initial setup is required.
+Please use the following password to proceed to installation:
+********
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword</pre>
+    <div class="warning">
+        Le mot de passe initial ne doit pas etre publie dans un rapport public. Il sert uniquement a debloquer Jenkins lors de la premiere connexion.
+    </div>
+
+    <h2>11. Recuperation du mot de passe initial Jenkins</h2>
+    <pre>docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword</pre>
+    <p><strong>A quoi ca sert :</strong> executer une commande a l'interieur du conteneur Jenkins pour lire le fichier du mot de passe initial.</p>
+    <table>
+        <tr>
+            <th>Partie</th>
+            <th>Explication</th>
+        </tr>
+        <tr>
+            <td><code>docker exec</code></td>
+            <td>Execute une commande dans un conteneur deja lance.</td>
+        </tr>
+        <tr>
+            <td><code>jenkins</code></td>
+            <td>Nom du conteneur cible.</td>
+        </tr>
+        <tr>
+            <td><code>cat /var/jenkins_home/secrets/initialAdminPassword</code></td>
+            <td>Affiche le contenu du fichier contenant le mot de passe initial.</td>
+        </tr>
+    </table>
+    <p><strong>Exemple d'utilisation :</strong> copier ce mot de passe, ouvrir Jenkins dans le navigateur, puis le coller dans l'ecran "Unlock Jenkins".</p>
+
+    <h2>12. Verification de l'interface web Jenkins</h2>
+    <pre>Invoke-WebRequest -UseBasicParsing http://localhost:8080/login -TimeoutSec 20</pre>
+    <p><strong>A quoi ca sert :</strong> verifier depuis PowerShell que l'interface Jenkins repond.</p>
+    <p><strong>Resultat obtenu :</strong></p>
+    <pre>200</pre>
+    <p>
+        Le code HTTP <code>200</code> signifie que la page existe et que Jenkins repond correctement.
+        L'interface est donc accessible dans le navigateur.
+    </p>
+
+    <h2>13. Premiere configuration a faire dans Jenkins</h2>
+    <p>Apres l'installation Docker, il faut finir l'assistant Jenkins dans le navigateur.</p>
+    <ol>
+        <li>Ouvrir <code>http://localhost:8080</code>.</li>
+        <li>Coller le mot de passe initial recupere avec <code>docker exec</code>.</li>
+        <li>Choisir <strong>Install suggested plugins</strong>.</li>
+        <li>Creer un utilisateur administrateur.</li>
+        <li>Valider l'URL Jenkins proposee : <code>http://localhost:8080/</code>.</li>
+        <li>Arriver sur le tableau de bord Jenkins.</li>
+    </ol>
+    <table>
+        <tr>
+            <th>Etape dans l'interface</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td>Unlock Jenkins</td>
+            <td>Verifier que l'utilisateur a acces a l'installation Jenkins.</td>
+            <td>Coller le mot de passe initial.</td>
+        </tr>
+        <tr>
+            <td>Install suggested plugins</td>
+            <td>Installer les plugins de base pour creer des jobs et pipelines.</td>
+            <td>Git, Pipeline, credentials, interface web.</td>
+        </tr>
+        <tr>
+            <td>Create First Admin User</td>
+            <td>Creer le compte qui administrera Jenkins.</td>
+            <td>Identifiant, mot de passe, email.</td>
+        </tr>
+        <tr>
+            <td>Jenkins URL</td>
+            <td>Definir l'adresse principale de Jenkins.</td>
+            <td><code>http://localhost:8080/</code>.</td>
+        </tr>
+    </table>
+
+    <h2>14. Plugins Jenkins utiles pour ce projet</h2>
+    <table>
+        <tr>
+            <th>Plugin</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple dans le projet</th>
+        </tr>
+        <tr>
+            <td>Pipeline</td>
+            <td>Permet d'executer un pipeline defini dans un <code>Jenkinsfile</code>.</td>
+            <td>Executer les stages checkout, install, build, smoke check.</td>
+        </tr>
+        <tr>
+            <td>Git</td>
+            <td>Permet a Jenkins de cloner un depot Git.</td>
+            <td>Recuperer le projet <code>fullStack_portfolio</code>.</td>
+        </tr>
+        <tr>
+            <td>GitHub Branch Source</td>
+            <td>Detecte branches et pull requests GitHub.</td>
+            <td>Creer automatiquement des builds par branche.</td>
+        </tr>
+        <tr>
+            <td>NodeJS</td>
+            <td>Installe ou selectionne une version Node.js pour les jobs.</td>
+            <td>Executer <code>npm ci</code> et <code>npm run build</code>.</td>
+        </tr>
+        <tr>
+            <td>Docker Pipeline</td>
+            <td>Facilite l'utilisation de Docker dans les pipelines.</td>
+            <td>Construire une image Docker depuis Jenkins.</td>
+        </tr>
+        <tr>
+            <td>Credentials Binding</td>
+            <td>Injecte des secrets dans un job sans les ecrire dans le code.</td>
+            <td>Mot de passe Docker Hub, token GitHub, variables de production.</td>
+        </tr>
+        <tr>
+            <td>Email Extension</td>
+            <td>Envoie des emails personnalises selon le resultat du build.</td>
+            <td>Notifier l'equipe si le build echoue.</td>
+        </tr>
+    </table>
+
+    <h2>15. Creation du Jenkinsfile</h2>
+    <p>
+        J'ai ajoute un fichier <code>Jenkinsfile</code> a la racine du projet.
+        Ce fichier decrit tout ce que Jenkins doit faire. C'est ce qu'on appelle un pipeline as code.
+    </p>
+    <p><strong>A quoi ca sert :</strong> le pipeline devient versionne avec le projet. Si le projet est clone ailleurs, Jenkins sait toujours comment le construire.</p>
+    <pre>pipeline {
+    agent any
+    stages {
+        stage("Checkout") {
+            steps {
+                checkout scm
+            }
+        }
+        stage("Install dependencies") {
+            steps {
+                script {
+                    runCommand("npm ci")
+                }
+            }
+        }
+        stage("Build frontend") {
+            steps {
+                script {
+                    runCommand("npm run build")
+                }
+            }
+        }
+    }
+}</pre>
+    <p><strong>Exemple :</strong> quand on clique sur <code>Build Now</code>, Jenkins lit ce fichier et execute les etapes dans l'ordre.</p>
+
+    <h2>16. Detail des stages Jenkins ajoutes</h2>
+    <table>
+        <tr>
+            <th>Stage</th>
+            <th>A quoi ca sert</th>
+            <th>Commande ou exemple</th>
+        </tr>
+        <tr>
+            <td>Checkout</td>
+            <td>Recuperer le code source depuis Git.</td>
+            <td><code>checkout scm</code></td>
+        </tr>
+        <tr>
+            <td>Install dependencies</td>
+            <td>Installer les dependances exactes du projet depuis <code>package-lock.json</code>.</td>
+            <td><code>npm ci</code></td>
+        </tr>
+        <tr>
+            <td>Quality checks</td>
+            <td>Lancer les tests si un script de test existe.</td>
+            <td><code>npm run test --if-present</code></td>
+        </tr>
+        <tr>
+            <td>Build frontend</td>
+            <td>Construire le frontend React/Vite.</td>
+            <td><code>npm run build</code></td>
+        </tr>
+        <tr>
+            <td>Smoke check</td>
+            <td>Verifier que le build a produit <code>dist/index.html</code>.</td>
+            <td><code>node -e "const fs=require('fs'); ..."</code></td>
+        </tr>
+        <tr>
+            <td>Docker image</td>
+            <td>Construire l'image Docker du projet si le parametre est coche.</td>
+            <td><code>docker build -t fullstack-portfolio:BUILD_NUMBER .</code></td>
+        </tr>
+        <tr>
+            <td>Post actions</td>
+            <td>Archiver les artefacts et envoyer les notifications.</td>
+            <td><code>archiveArtifacts artifacts: "dist/**"</code></td>
+        </tr>
+    </table>
+
+    <h2>17. Pourquoi j'ai utilise npm ci dans Jenkins</h2>
+    <p>
+        <code>npm ci</code> est plus adapte a la CI que <code>npm install</code>.
+        Il installe les dependances a partir de <code>package-lock.json</code> et donne un environnement plus reproductible.
+    </p>
+    <table>
+        <tr>
+            <th>Commande</th>
+            <th>Utilisation</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>npm install</code></td>
+            <td>Pratique en developpement, peut modifier le lockfile.</td>
+            <td>Ajouter une dependance localement.</td>
+        </tr>
+        <tr>
+            <td><code>npm ci</code></td>
+            <td>Pratique en CI, installation propre et reproductible.</td>
+            <td>Utilise dans Jenkins.</td>
+        </tr>
+    </table>
+
+    <h2>18. Build Vite du projet</h2>
+    <pre>npm.cmd run build</pre>
+    <p><strong>A quoi ca sert :</strong> generer une version production du frontend React.</p>
+    <p><strong>Exemple de resultat :</strong></p>
+    <pre>vite v8.0.8 building client environment for production...
+dist/index.html
+dist/assets/index-....css
+dist/assets/index-....js
+✓ built</pre>
+    <p>
+        Le dossier <code>dist/</code> est l'artefact principal du frontend.
+        Jenkins l'archive pour permettre de le telecharger depuis l'interface du build.
+    </p>
+
+    <h2>19. Adaptation de Express pour servir dist en production</h2>
+    <p>
+        Le projet avait deja une API Express. J'ai adapte <code>app.js</code> pour que, en production,
+        Express serve aussi les fichiers generes par Vite dans <code>dist/</code>.
+    </p>
+    <pre>if (process.env.NODE_ENV === "production") {
+    app.use(express.static(distPath));
+    app.get(/^(?!\/api).*/, (_req, res) =&gt; {
+        return res.sendFile(path.join(distPath, "index.html"));
+    });
+}</pre>
+    <table>
+        <tr>
+            <th>Element</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>express.static(distPath)</code></td>
+            <td>Servir les fichiers HTML, CSS et JS generes.</td>
+            <td><code>/assets/index.js</code> est envoye au navigateur.</td>
+        </tr>
+        <tr>
+            <td><code>app.get(/^(?!\/api).*/)</code></td>
+            <td>Rediriger les routes React vers <code>index.html</code>.</td>
+            <td><code>/portfolio</code> affiche l'application React.</td>
+        </tr>
+        <tr>
+            <td><code>NODE_ENV=production</code></td>
+            <td>Activer le comportement de production.</td>
+            <td>Utilise dans le Dockerfile runtime.</td>
+        </tr>
+    </table>
+
+    <h2>20. Creation du Dockerfile du projet</h2>
+    <p>
+        J'ai ajoute un <code>Dockerfile</code> multi-stage. Cela permet de construire le frontend dans une premiere etape,
+        puis de garder une image finale plus propre pour l'execution.
+    </p>
+    <pre>FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package*.json ./
+RUN npm ci --omit=dev &amp;&amp; npm cache clean --force
+COPY app.js ./
+COPY config ./config
+COPY controllers ./controllers
+COPY lib ./lib
+COPY middleware ./middleware
+COPY models ./models
+COPY public ./public
+COPY routes ./routes
+COPY --from=build /app/dist ./dist
+EXPOSE 5000
+CMD ["node", "app.js"]</pre>
+    <table>
+        <tr>
+            <th>Ligne</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>FROM node:22-alpine AS build</code></td>
+            <td>Utiliser Node.js pour construire le projet.</td>
+            <td>Vite a besoin de Node pour generer <code>dist/</code>.</td>
+        </tr>
+        <tr>
+            <td><code>RUN npm ci</code></td>
+            <td>Installer toutes les dependances, y compris les dependances de build.</td>
+            <td>Installer Vite et React.</td>
+        </tr>
+        <tr>
+            <td><code>RUN npm run build</code></td>
+            <td>Construire le frontend.</td>
+            <td>Creer <code>dist/index.html</code>.</td>
+        </tr>
+        <tr>
+            <td><code>FROM node:22-alpine AS runtime</code></td>
+            <td>Creer l'image finale d'execution.</td>
+            <td>Elle contient l'API et le build final.</td>
+        </tr>
+        <tr>
+            <td><code>npm ci --omit=dev</code></td>
+            <td>Installer seulement les dependances necessaires en production.</td>
+            <td>Express, mongoose, dotenv, cors.</td>
+        </tr>
+        <tr>
+            <td><code>COPY --from=build /app/dist ./dist</code></td>
+            <td>Copier le build frontend dans l'image finale.</td>
+            <td>Express peut servir <code>dist/</code>.</td>
+        </tr>
+        <tr>
+            <td><code>EXPOSE 5000</code></td>
+            <td>Documenter le port utilise par l'application.</td>
+            <td>L'application Express ecoute sur 5000.</td>
+        </tr>
+        <tr>
+            <td><code>CMD ["node", "app.js"]</code></td>
+            <td>Definir la commande lancee au demarrage du conteneur.</td>
+            <td>Demarrer l'API Express.</td>
+        </tr>
+    </table>
+
+    <h2>21. Creation du .dockerignore</h2>
+    <p>
+        Le fichier <code>.dockerignore</code> evite d'envoyer des fichiers inutiles ou sensibles au contexte de build Docker.
+    </p>
+    <pre>node_modules
+dist
+.git
+.env
+.env.*
+!.env.example
+coverage
+*.log
+.vite
+.cache
+.vscode
+.idea</pre>
+    <table>
+        <tr>
+            <th>Element ignore</th>
+            <th>Pourquoi</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>node_modules</code></td>
+            <td>Les dependances sont reinstallees proprement dans Docker.</td>
+            <td>Evite de copier des milliers de fichiers locaux.</td>
+        </tr>
+        <tr>
+            <td><code>.env</code></td>
+            <td>Contient des secrets ou variables locales.</td>
+            <td><code>MONGO_URI</code>, <code>ADMIN_SECRET</code>.</td>
+        </tr>
+        <tr>
+            <td><code>dist</code></td>
+            <td>Le build est regenere dans Docker.</td>
+            <td>Evite un ancien build non controle.</td>
+        </tr>
+        <tr>
+            <td><code>.git</code></td>
+            <td>L'historique Git n'est pas necessaire dans l'image.</td>
+            <td>Image plus legere.</td>
+        </tr>
+    </table>
+
+    <h2>22. Construction de l'image Docker du projet</h2>
+    <pre>docker build -t fullstack-portfolio:jenkins-demo .</pre>
+    <p><strong>A quoi ca sert :</strong> verifier que le projet peut etre transforme en image Docker de production.</p>
+    <table>
+        <tr>
+            <th>Partie</th>
+            <th>Explication</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>docker build</code></td>
+            <td>Construit une image Docker depuis le Dockerfile.</td>
+            <td>Docker lit les instructions du fichier.</td>
+        </tr>
+        <tr>
+            <td><code>-t fullstack-portfolio:jenkins-demo</code></td>
+            <td>Donne un nom et un tag a l'image.</td>
+            <td>Nom : <code>fullstack-portfolio</code>, tag : <code>jenkins-demo</code>.</td>
+        </tr>
+        <tr>
+            <td><code>.</code></td>
+            <td>Utilise le dossier courant comme contexte Docker.</td>
+            <td>Le projet actuel est envoye a Docker.</td>
+        </tr>
+    </table>
+    <p><strong>Resultat obtenu :</strong> l'image <code>fullstack-portfolio:jenkins-demo</code> a ete construite correctement.</p>
+
+    <h2>23. Verification des images Docker</h2>
+    <pre>docker images --format "{{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}"</pre>
+    <p><strong>A quoi ca sert :</strong> afficher les images disponibles localement.</p>
+    <p><strong>Exemples presents apres le travail :</strong></p>
+    <pre>jenkins/jenkins:lts-jdk21        799MB
+fullstack-portfolio:jenkins-demo 422MB</pre>
+    <p>
+        La premiere image sert a lancer Jenkins. La deuxieme image correspond au projet fil rouge pret a etre execute en conteneur.
+    </p>
+
+    <h2>24. Exemple pour lancer le projet en Docker</h2>
+    <p>
+        Une fois l'image construite, on peut lancer l'application avec les variables necessaires.
+    </p>
+    <pre>docker run --rm -p 5000:5000 `
+  -e MONGO_URI="mongodb://host.docker.internal:27017/fullstack_portfolio" `
+  -e ADMIN_PASSWORD="mot-de-passe-fort" `
+  -e ADMIN_SECRET="cle-longue-et-secrete" `
+  fullstack-portfolio:jenkins-demo</pre>
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>MONGO_URI</code></td>
+            <td>Adresse de la base MongoDB.</td>
+            <td><code>mongodb://host.docker.internal:27017/fullstack_portfolio</code></td>
+        </tr>
+        <tr>
+            <td><code>ADMIN_PASSWORD</code></td>
+            <td>Mot de passe admin de l'application portfolio.</td>
+            <td><code>mot-de-passe-fort</code></td>
+        </tr>
+        <tr>
+            <td><code>ADMIN_SECRET</code></td>
+            <td>Secret utilise pour verifier le token admin.</td>
+            <td><code>cle-longue-et-secrete</code></td>
+        </tr>
+    </table>
+
+    <h2>25. Creation d'un job Pipeline Jenkins pour ce projet</h2>
+    <p>Apres l'assistant initial, le job Jenkins peut etre cree depuis l'interface.</p>
+    <ol>
+        <li>Cliquer sur <strong>New Item</strong>.</li>
+        <li>Nommer le job <code>fullstack-portfolio</code>.</li>
+        <li>Choisir <strong>Pipeline</strong>.</li>
+        <li>Dans <strong>Pipeline</strong>, choisir <strong>Pipeline script from SCM</strong>.</li>
+        <li>Choisir <strong>Git</strong>.</li>
+        <li>Coller l'URL du depot Git.</li>
+        <li>Ajouter les credentials si le depot est prive.</li>
+        <li>Verifier que <strong>Script Path</strong> vaut <code>Jenkinsfile</code>.</li>
+        <li>Cliquer sur <strong>Save</strong>.</li>
+        <li>Cliquer sur <strong>Build Now</strong>.</li>
+    </ol>
+    <p><strong>Exemple :</strong> si le depot est public, Jenkins peut cloner directement l'URL HTTPS du depot. S'il est prive, il faut ajouter un token ou une cle SSH dans <strong>Manage Jenkins &gt; Credentials</strong>.</p>
+
+    <h2>26. Gestion des credentials Jenkins</h2>
+    <p>
+        Les credentials permettent de garder les secrets hors du code source.
+        Il ne faut pas ecrire les mots de passe dans le <code>Jenkinsfile</code>.
+    </p>
+    <table>
+        <tr>
+            <th>Secret</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple d'utilisation</th>
+        </tr>
+        <tr>
+            <td>Token GitHub</td>
+            <td>Cloner un depot prive.</td>
+            <td>Credential de type username/password ou secret text.</td>
+        </tr>
+        <tr>
+            <td>Mot de passe Docker Hub</td>
+            <td>Pousser une image vers Docker Hub.</td>
+            <td><code>docker login</code> dans Jenkins avec credential binding.</td>
+        </tr>
+        <tr>
+            <td><code>MONGO_URI</code></td>
+            <td>Connecter l'API a une base distante.</td>
+            <td>Injecter la variable au moment du deploiement.</td>
+        </tr>
+        <tr>
+            <td><code>ADMIN_SECRET</code></td>
+            <td>Securiser les routes admin.</td>
+            <td>Secret text Jenkins.</td>
+        </tr>
+    </table>
+
+    <h2>27. Notifications Jenkins</h2>
+    <p>
+        Le <code>Jenkinsfile</code> contient un parametre <code>EMAIL_RECIPIENTS</code>.
+        Si SMTP et le plugin Email Extension sont configures, Jenkins peut envoyer un email apres le build.
+    </p>
+    <pre>parameters {
+    string(
+        name: "EMAIL_RECIPIENTS",
+        defaultValue: "",
+        description: "Optional comma-separated email list for Jenkins notifications."
+    )
+}</pre>
+    <p><strong>A quoi ca sert :</strong> informer automatiquement l'equipe si un build reussit ou echoue.</p>
+    <p><strong>Exemple :</strong> mettre <code>dev@example.com,admin@example.com</code> dans le parametre du build.</p>
+
+    <h2>28. Artefacts Jenkins</h2>
+    <pre>archiveArtifacts artifacts: "dist/**", fingerprint: true, allowEmptyArchive: true</pre>
+    <p><strong>A quoi ca sert :</strong> sauvegarder le resultat du build dans Jenkins.</p>
+    <p>
+        Ici, l'artefact principal est le dossier <code>dist/</code>, qui contient le frontend compile.
+        Apres un build, on peut le telecharger depuis la page du build Jenkins.
+    </p>
+    <p><strong>Exemple :</strong> apres <code>npm run build</code>, Jenkins archive <code>dist/index.html</code> et les fichiers CSS/JS generes.</p>
+
+    <h2>29. Comparaison entre Jenkins et GitHub Actions</h2>
+    <table>
+        <tr>
+            <th>Point</th>
+            <th>Jenkins</th>
+            <th>GitHub Actions</th>
+        </tr>
+        <tr>
+            <td>Installation</td>
+            <td>Serveur a installer et administrer.</td>
+            <td>Integre directement a GitHub.</td>
+        </tr>
+        <tr>
+            <td>Controle</td>
+            <td>Tres fort controle sur l'environnement.</td>
+            <td>Controle plus simple, surtout avec runners heberges.</td>
+        </tr>
+        <tr>
+            <td>Plugins</td>
+            <td>Grand ecosysteme de plugins.</td>
+            <td>Actions reutilisables depuis le marketplace.</td>
+        </tr>
+        <tr>
+            <td>Cas d'usage</td>
+            <td>Environnements internes, CI/CD personnalisee, entreprises.</td>
+            <td>Projets GitHub, CI rapide, workflows cloud.</td>
+        </tr>
+    </table>
+
+    <h2>30. Commandes utiles apres installation</h2>
+    <table>
+        <tr>
+            <th>Commande</th>
+            <th>A quoi ca sert</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>docker ps</code></td>
+            <td>Voir les conteneurs en cours d'execution.</td>
+            <td>Verifier que Jenkins est <code>Up</code>.</td>
+        </tr>
+        <tr>
+            <td><code>docker stop jenkins</code></td>
+            <td>Arreter Jenkins.</td>
+            <td>Utile avant d'eteindre la machine.</td>
+        </tr>
+        <tr>
+            <td><code>docker start jenkins</code></td>
+            <td>Redemarrer Jenkins.</td>
+            <td>Relancer Jenkins le lendemain.</td>
+        </tr>
+        <tr>
+            <td><code>docker logs jenkins</code></td>
+            <td>Voir les logs Jenkins.</td>
+            <td>Diagnostiquer un probleme de demarrage.</td>
+        </tr>
+        <tr>
+            <td><code>docker exec -it jenkins bash</code></td>
+            <td>Ouvrir un shell dans le conteneur Jenkins.</td>
+            <td>Inspecter <code>/var/jenkins_home</code>.</td>
+        </tr>
+        <tr>
+            <td><code>docker volume inspect jenkins_home</code></td>
+            <td>Voir les details du volume Jenkins.</td>
+            <td>Confirmer que les donnees sont persistantes.</td>
+        </tr>
+    </table>
+
+    <h2>31. Problemes possibles et solutions</h2>
+    <table>
+        <tr>
+            <th>Probleme</th>
+            <th>Cause possible</th>
+            <th>Solution</th>
+        </tr>
+        <tr>
+            <td><code>Cannot connect to Docker daemon</code></td>
+            <td>Docker Desktop n'est pas lance.</td>
+            <td>Ouvrir Docker Desktop puis relancer <code>docker info</code>.</td>
+        </tr>
+        <tr>
+            <td>Port 8080 deja utilise</td>
+            <td>Une autre application utilise le port.</td>
+            <td>Lancer Jenkins avec <code>-p 8081:8080</code>.</td>
+        </tr>
+        <tr>
+            <td>Mot de passe initial introuvable</td>
+            <td>Jenkins est deja configure ou le fichier a ete supprime.</td>
+            <td>Verifier les logs ou utiliser le compte admin cree.</td>
+        </tr>
+        <tr>
+            <td>Pipeline echoue sur <code>npm ci</code></td>
+            <td>Node.js absent sur l'agent Jenkins ou lockfile incoherent.</td>
+            <td>Installer/configurer NodeJS dans Jenkins ou corriger <code>package-lock.json</code>.</td>
+        </tr>
+        <tr>
+            <td>Stage Docker echoue dans Jenkins</td>
+            <td>Docker n'est pas accessible depuis l'agent Jenkins.</td>
+            <td>Installer Docker sur l'agent ou configurer un agent dedie.</td>
+        </tr>
+    </table>
+
+    <h2>32. Ce qui a permis de realiser le travail</h2>
+    <ul>
+        <li><strong>Docker Desktop</strong> : a permis de lancer Jenkins dans un conteneur local.</li>
+        <li><strong>Image Jenkins officielle</strong> : a fourni Jenkins pret a demarrer avec Java 21.</li>
+        <li><strong>Volume jenkins_home</strong> : a garde les donnees Jenkins persistantes.</li>
+        <li><strong>Projet Node/Vite</strong> : disposait deja d'un script <code>npm run build</code>.</li>
+        <li><strong>Jenkinsfile</strong> : a transforme les etapes CI/CD en code versionne.</li>
+        <li><strong>Dockerfile</strong> : a permis de construire une image de production du projet.</li>
+        <li><strong>.dockerignore</strong> : a protege les fichiers locaux et allege le build Docker.</li>
+        <li><strong>app.js adapte</strong> : a permis a Express de servir le frontend compile.</li>
+    </ul>
+
+    <h2>33. Scenario final de demonstration</h2>
+    <ol>
+        <li>Montrer Docker Desktop lance.</li>
+        <li>Executer <code>docker ps</code> pour montrer le conteneur Jenkins actif.</li>
+        <li>Ouvrir <code>http://localhost:8080</code>.</li>
+        <li>Expliquer le volume <code>jenkins_home</code>.</li>
+        <li>Expliquer le reseau <code>jenkins</code>.</li>
+        <li>Ouvrir le projet et montrer <code>Jenkinsfile</code>.</li>
+        <li>Creer ou ouvrir le job <code>fullstack-portfolio</code>.</li>
+        <li>Lancer <strong>Build Now</strong>.</li>
+        <li>Montrer les stages du pipeline.</li>
+        <li>Montrer les artefacts <code>dist/**</code>.</li>
+        <li>Activer le parametre Docker si l'agent Jenkins a acces a Docker.</li>
+        <li>Montrer l'image <code>fullstack-portfolio:jenkins-demo</code>.</li>
+    </ol>
+
+    <h2>34. Conclusion</h2>
+    <p>
+        Jenkins est maintenant installe avec Docker et le projet contient tous les fichiers necessaires pour une integration CI/CD.
+        Le pipeline peut installer les dependances, executer les controles disponibles, construire le frontend, verifier le resultat,
+        archiver les fichiers generes et construire une image Docker.
+    </p>
+    <p>
+        Cette approche est adaptee a une demonstration pedagogique parce qu'elle montre a la fois Jenkins, Docker, Git, Node.js,
+        les artefacts, les plugins, les notifications et une strategie de deploiement possible.
+    </p>
+
+    <p class="small">Document genere localement depuis le projet fullStack_portfolio.</p>
+</body>
+</html>
