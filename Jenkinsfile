@@ -62,7 +62,8 @@ pipeline {
         stage("Install dependencies") {
             steps {
                 script {
-                    runCommand("npm ci")
+                    runCommand("node --version && npm --version")
+                    runCommand("npm ci || npm install")
                 }
             }
         }

@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "description": "Portfolio en React.",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
