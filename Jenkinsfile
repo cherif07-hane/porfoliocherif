@@ -31,19 +31,19 @@ pipeline {
 
     options {
         disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: "10"))
+        buildDiscarder(logrotator(numToKeepStr: "10"))
     }
 
     parameters {
         booleanParam(
             name: "BUILD_DOCKER_IMAGE",
             defaultValue: false,
-            description: "Build the production Docker image when Docker is installed on the Jenkins agent."
+            description: "Build Docker image"
         )
         string(
             name: "EMAIL_RECIPIENTS",
             defaultValue: "",
-            description: "Optional comma-separated email list for Jenkins notifications."
+            description: "Emails for notifications"
         )
     }
 
@@ -53,6 +53,7 @@ pipeline {
     }
 
     stages {
+
         stage("Checkout") {
             steps {
                 checkout scm
@@ -60,15 +61,25 @@ pipeline {
         }
 
         stage("Install dependencies") {
+            agent {
+                docker {
+                    image 'node:18'
+                }
+            }
             steps {
                 script {
                     runCommand("node --version && npm --version")
-                    runCommand("npm ci || npm install")
+                    runCommand("npm install")
                 }
             }
         }
 
         stage("Quality checks") {
+            agent {
+                docker {
+                    image 'node:18'
+                }
+            }
             steps {
                 script {
                     runCommand("npm run test --if-present")
@@ -77,6 +88,11 @@ pipeline {
         }
 
         stage("Build frontend") {
+            agent {
+                docker {
+                    image 'node:18'
+                }
+            }
             steps {
                 script {
                     runCommand("npm run build")
@@ -85,9 +101,14 @@ pipeline {
         }
 
         stage("Smoke check") {
+            agent {
+                docker {
+                    image 'node:18'
+                }
+            }
             steps {
                 script {
-                    runCommand("node -e \"const fs=require('fs'); if (!fs.existsSync('dist/index.html')) process.exit(1);\"")
+                    runCommand("node -e \"const fs=require('fs'); if (!fs.existsSync('build/index.html') && !fs.existsSync('dist/index.html')) process.exit(1);\"")
                 }
             }
         }
@@ -100,7 +121,9 @@ pipeline {
             }
             steps {
                 script {
-                    runCommand("docker build -t ${env.DOCKER_IMAGE}:${env.BUILD_NUMBER} -t ${env.DOCKER_IMAGE}:latest .")
+                    runCommand(
+                        "docker build -t ${env.DOCKER_IMAGE}:${env.BUILD_NUMBER} -t ${env.DOCKER_IMAGE}:latest ."
+                    )
                 }
             }
         }
@@ -108,16 +131,16 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: "dist/**", fingerprint: true, allowEmptyArchive: true
+            archiveArtifacts artifacts: "build/**, dist/**", fingerprint: true, allowEmptyArchive: true
         }
         success {
-            echo "Pipeline completed successfully."
+            echo "Pipeline SUCCESS"
             script {
                 notifyByEmail("SUCCESS")
             }
         }
         failure {
-            echo "Pipeline failed."
+            echo "Pipeline FAILED"
             script {
                 notifyByEmail("FAILURE")
             }
