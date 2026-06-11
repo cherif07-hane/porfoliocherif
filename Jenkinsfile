@@ -31,19 +31,20 @@ pipeline {
 
     options {
         disableConcurrentBuilds()
-        buildDiscarder(logrotator(numToKeepStr: "10"))
+        buildDiscarder(logRotator(numToKeepStr: "10"))
     }
 
     parameters {
         booleanParam(
             name: "BUILD_DOCKER_IMAGE",
             defaultValue: false,
-            description: "Build Docker image"
+            description: "Build Docker image (optional)"
         )
+
         string(
             name: "EMAIL_RECIPIENTS",
             defaultValue: "",
-            description: "Emails for notifications"
+            description: "Optional email notifications"
         )
     }
 
@@ -68,7 +69,8 @@ pipeline {
             }
             steps {
                 script {
-                    runCommand("node --version && npm --version")
+                    runCommand("node --version")
+                    runCommand("npm --version")
                     runCommand("npm install")
                 }
             }
@@ -108,7 +110,13 @@ pipeline {
             }
             steps {
                 script {
-                    runCommand("node -e \"const fs=require('fs'); if (!fs.existsSync('build/index.html') && !fs.existsSync('dist/index.html')) process.exit(1);\"")
+                    runCommand("""
+                        node -e "const fs=require('fs');
+                        if (!fs.existsSync('build/index.html') && !fs.existsSync('dist/index.html')) {
+                            console.error('Build failed: no output found');
+                            process.exit(1);
+                        }"
+                    """)
                 }
             }
         }
@@ -133,12 +141,14 @@ pipeline {
         always {
             archiveArtifacts artifacts: "build/**, dist/**", fingerprint: true, allowEmptyArchive: true
         }
+
         success {
             echo "Pipeline SUCCESS"
             script {
                 notifyByEmail("SUCCESS")
             }
         }
+
         failure {
             echo "Pipeline FAILED"
             script {
