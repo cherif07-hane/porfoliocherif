@@ -9,6 +9,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "richef07/porfoliocherif"
         SONAR_TOKEN = "squ_0db2ae03762c1989a58eed3a2e587a0fbe48e64f"
+        KUBECONFIG = "/var/jenkins_home/.kube/config"
     }
 
     stages {
@@ -45,10 +46,17 @@ pipeline {
             }
         }
 
-        stage("Deploy") {
+        stage("Load Image to Kubernetes") {
             steps {
-                sh "docker compose -f docker-compose.prod.yml down || true"
-                sh "docker compose -f docker-compose.prod.yml up -d"
+                sh "kind load docker-image ${DOCKER_IMAGE}:latest --name portfolio"
+            }
+        }
+
+        stage("Deploy to Kubernetes") {
+            steps {
+                sh "kubectl apply -f k8s/"
+                sh "kubectl rollout restart deployment/portfolio-app -n portfolio"
+                sh "kubectl rollout status deployment/portfolio-app -n portfolio --timeout=60s"
             }
         }
     }
@@ -59,7 +67,7 @@ pipeline {
         }
 
         success {
-            echo "SUCCESS - Application deployee sur http://localhost:8081"
+            echo "SUCCESS - App deployee sur Kubernetes: http://localhost:30080"
         }
 
         failure {
