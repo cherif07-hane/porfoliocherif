@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "richef07/porfoliocherif"
+        SONAR_TOKEN = "squ_0db2ae03762c1989a58eed3a2e587a0fbe48e64f"
     }
 
     stages {
@@ -15,6 +16,20 @@ pipeline {
         stage("Checkout") {
             steps {
                 checkout scm
+            }
+        }
+
+        stage("SonarQube Analysis") {
+            steps {
+                sh """
+                    sonar-scanner \
+                      -Dsonar.host.url=http://sonarqube:9000 \
+                      -Dsonar.token=${SONAR_TOKEN} \
+                      -Dsonar.projectKey=portfolio-react-spa \
+                      -Dsonar.projectName='Portfolio React SPA' \
+                      -Dsonar.sources=src,controllers,routes,models,middleware,config,lib \
+                      -Dsonar.exclusions=node_modules/**,dist/**,public/**,docs/**,scripts/**
+                """
             }
         }
 
@@ -44,7 +59,7 @@ pipeline {
         }
 
         success {
-            echo "SUCCESS - Application deployee sur http://localhost:5000"
+            echo "SUCCESS - Application deployee sur http://localhost:8081"
         }
 
         failure {

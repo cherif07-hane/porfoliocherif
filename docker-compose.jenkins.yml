@@ -13,5 +13,26 @@ services:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
     user: root
 
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_SEARCH_JAVAADDITIONALOPTS=-Xms256m -Xmx256m
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_logs:/opt/sonarqube/logs
+      - sonar_extensions:/opt/sonarqube/extensions
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
 volumes:
   jenkins_home:
+  sonar_data:
+  sonar_logs:
+  sonar_extensions:
