@@ -78,20 +78,32 @@ pipeline {
 
         success {
             echo "SUCCESS - App sur Kubernetes: http://localhost:30080"
-            mail(
-                to: "richef360@gmail.com",
-                subject: "[SUCCESS] Portfolio Pipeline #${env.BUILD_NUMBER}",
-                body: "Build #${env.BUILD_NUMBER} termine avec succes.\n\nApplication deployee sur Kubernetes: http://localhost:30080\n\nVoir les details: ${env.BUILD_URL}"
-            )
+            script {
+                try {
+                    mail(
+                        to: "richef360@gmail.com",
+                        subject: "[SUCCESS] Portfolio Pipeline #${env.BUILD_NUMBER}",
+                        body: "Build #${env.BUILD_NUMBER} termine avec succes.\n\nApplication deployee sur Kubernetes: http://localhost:30080\n\nVoir les details: ${env.BUILD_URL}"
+                    )
+                } catch (Exception e) {
+                    echo "Email non envoye (SMTP non configure): ${e.message}"
+                }
+            }
         }
 
         failure {
             echo "FAILED - Verifier les logs ci-dessus"
-            mail(
-                to: "richef360@gmail.com",
-                subject: "[FAILED] Portfolio Pipeline #${env.BUILD_NUMBER}",
-                body: "Build #${env.BUILD_NUMBER} a echoue.\n\nVerifier les logs: ${env.BUILD_URL}console"
-            )
+            script {
+                try {
+                    mail(
+                        to: "richef360@gmail.com",
+                        subject: "[FAILED] Portfolio Pipeline #${env.BUILD_NUMBER}",
+                        body: "Build #${env.BUILD_NUMBER} a echoue.\n\nVerifier les logs: ${env.BUILD_URL}console"
+                    )
+                } catch (Exception e) {
+                    echo "Email non envoye (SMTP non configure): ${e.message}"
+                }
+            }
         }
     }
 }
