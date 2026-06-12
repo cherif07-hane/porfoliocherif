@@ -1,12 +1,12 @@
 services:
   mongo:
     image: mongo:7
-    container_name: portfolio-mongo
+    container_name: portfolio-prod-mongo
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo_prod_data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
@@ -16,10 +16,10 @@ services:
 
   app:
     image: richef07/porfoliocherif:latest
-    container_name: portfolio-app
+    container_name: portfolio-prod-app
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "8081:5000"
     environment:
       NODE_ENV: production
       PORT: 5000
@@ -29,4 +29,4 @@ services:
         condition: service_healthy
 
 volumes:
-  mongo_data:
+  mongo_prod_data:
