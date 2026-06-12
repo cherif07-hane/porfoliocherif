@@ -78,10 +78,26 @@ pipeline {
 
         success {
             echo "SUCCESS - App sur Kubernetes: http://localhost:30080"
+            emailext(
+                to: "richef360@gmail.com",
+                subject: "[SUCCESS] Portfolio Pipeline #${BUILD_NUMBER}",
+                body: """Build #${BUILD_NUMBER} termine avec succes.
+
+Application deployee sur Kubernetes: http://localhost:30080
+
+Voir les details: ${BUILD_URL}"""
+            )
         }
 
         failure {
             echo "FAILED - Verifier les logs ci-dessus"
+            emailext(
+                to: "richef360@gmail.com",
+                subject: "[FAILED] Portfolio Pipeline #${BUILD_NUMBER}",
+                body: """Build #${BUILD_NUMBER} a echoue.
+
+Verifier les logs: ${BUILD_URL}console"""
+            )
         }
     }
 }
