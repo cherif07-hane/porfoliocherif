@@ -29,7 +29,7 @@ pipeline {
 
         stage("SonarQube Analysis") {
             when {
-                expression { return !params.SKIP_SONAR }
+                expression { return params.SKIP_SONAR != true }
             }
             steps {
                 sh """
