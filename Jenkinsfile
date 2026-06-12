@@ -73,19 +73,15 @@ pipeline {
 
     post {
         always {
-            echo "Pipeline terminee - Build #${BUILD_NUMBER}"
+            echo "Pipeline terminee - Build #${env.BUILD_NUMBER}"
         }
 
         success {
             echo "SUCCESS - App sur Kubernetes: http://localhost:30080"
             emailext(
                 to: "richef360@gmail.com",
-                subject: "[SUCCESS] Portfolio Pipeline #${BUILD_NUMBER}",
-                body: """Build #${BUILD_NUMBER} termine avec succes.
-
-Application deployee sur Kubernetes: http://localhost:30080
-
-Voir les details: ${BUILD_URL}"""
+                subject: "[SUCCESS] Portfolio Pipeline #${env.BUILD_NUMBER}",
+                body: "Build #${env.BUILD_NUMBER} termine avec succes.\n\nApplication deployee sur Kubernetes: http://localhost:30080\n\nVoir les details: ${env.BUILD_URL}"
             )
         }
 
@@ -93,10 +89,8 @@ Voir les details: ${BUILD_URL}"""
             echo "FAILED - Verifier les logs ci-dessus"
             emailext(
                 to: "richef360@gmail.com",
-                subject: "[FAILED] Portfolio Pipeline #${BUILD_NUMBER}",
-                body: """Build #${BUILD_NUMBER} a echoue.
-
-Verifier les logs: ${BUILD_URL}console"""
+                subject: "[FAILED] Portfolio Pipeline #${env.BUILD_NUMBER}",
+                body: "Build #${env.BUILD_NUMBER} a echoue.\n\nVerifier les logs: ${env.BUILD_URL}console"
             )
         }
     }
