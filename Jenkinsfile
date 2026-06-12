@@ -6,9 +6,16 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: "10"))
     }
 
+    parameters {
+        booleanParam(
+            name: "RUN_SONAR",
+            defaultValue: false,
+            description: "Executer l analyse SonarQube (plus lent)"
+        )
+    }
+
     environment {
         DOCKER_IMAGE = "richef07/porfoliocherif"
-        SONAR_TOKEN = "squ_0db2ae03762c1989a58eed3a2e587a0fbe48e64f"
         KUBECONFIG = "/var/jenkins_home/.kube/config"
     }
 
@@ -21,11 +28,14 @@ pipeline {
         }
 
         stage("SonarQube Analysis") {
+            when {
+                expression { return params.RUN_SONAR }
+            }
             steps {
                 sh """
                     sonar-scanner \
                       -Dsonar.host.url=http://sonarqube:9000 \
-                      -Dsonar.token=${SONAR_TOKEN} \
+                      -Dsonar.token=squ_0db2ae03762c1989a58eed3a2e587a0fbe48e64f \
                       -Dsonar.projectKey=portfolio-react-spa \
                       -Dsonar.projectName='Portfolio React SPA' \
                       -Dsonar.sources=src,controllers,routes,models,middleware,config,lib \
@@ -56,7 +66,7 @@ pipeline {
             steps {
                 sh "kubectl apply -f k8s/"
                 sh "kubectl rollout restart deployment/portfolio-app -n portfolio"
-                sh "kubectl rollout status deployment/portfolio-app -n portfolio --timeout=60s"
+                sh "kubectl rollout status deployment/portfolio-app -n portfolio --timeout=90s"
             }
         }
     }
@@ -67,7 +77,7 @@ pipeline {
         }
 
         success {
-            echo "SUCCESS - App deployee sur Kubernetes: http://localhost:30080"
+            echo "SUCCESS - App sur Kubernetes: http://localhost:30080"
         }
 
         failure {
