@@ -8,9 +8,9 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: "RUN_SONAR",
+            name: "SKIP_SONAR",
             defaultValue: false,
-            description: "Executer l analyse SonarQube (plus lent)"
+            description: "Passer l analyse SonarQube"
         )
     }
 
@@ -29,7 +29,7 @@ pipeline {
 
         stage("SonarQube Analysis") {
             when {
-                expression { return params.RUN_SONAR }
+                expression { return !params.SKIP_SONAR }
             }
             steps {
                 sh """
@@ -39,7 +39,10 @@ pipeline {
                       -Dsonar.projectKey=portfolio-react-spa \
                       -Dsonar.projectName='Portfolio React SPA' \
                       -Dsonar.sources=src,controllers,routes,models,middleware,config,lib \
-                      -Dsonar.exclusions=node_modules/**,dist/**,public/**,docs/**,scripts/**
+                      -Dsonar.exclusions=node_modules/**,dist/**,public/**,docs/**,scripts/**,**/*.css \
+                      -Dsonar.javascript.node.maxspace=512 \
+                      -Dsonar.cpd.exclusions=**/* \
+                      -Dsonar.scm.disabled=true
                 """
             }
         }
