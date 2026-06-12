@@ -8,11 +8,11 @@ services:
     volumes:
       - mongo_prod_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ping:1}).ok"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   app:
     image: richef07/porfoliocherif:latest
