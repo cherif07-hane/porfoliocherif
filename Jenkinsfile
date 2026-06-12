@@ -26,16 +26,14 @@ pipeline {
 
         stage("Verify Build") {
             steps {
-                sh """
-                    docker run --rm ${DOCKER_IMAGE}:${BUILD_NUMBER} ls /app/dist/index.html
-                """
+                sh "docker run --rm ${DOCKER_IMAGE}:${BUILD_NUMBER} ls /app/dist/index.html"
             }
         }
 
         stage("Deploy") {
             steps {
-                sh "docker compose down || true"
-                sh "docker compose up -d"
+                sh "docker compose -f docker-compose.prod.yml down || true"
+                sh "docker compose -f docker-compose.prod.yml up -d"
             }
         }
     }
@@ -46,7 +44,7 @@ pipeline {
         }
 
         success {
-            echo "SUCCESS - Application deployee sur http://localhost:5173"
+            echo "SUCCESS - Application deployee sur http://localhost:5000"
         }
 
         failure {
