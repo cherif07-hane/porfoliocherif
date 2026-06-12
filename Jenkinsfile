@@ -35,7 +35,7 @@ pipeline {
                 sh """
                     sonar-scanner \
                       -Dsonar.host.url=http://sonarqube:9000 \
-                      -Dsonar.token=squ_0db2ae03762c1989a58eed3a2e587a0fbe48e64f \
+                      -Dsonar.token=squ_98d2290b7a455978481018d5ec5cd8265407ba38 \
                       -Dsonar.projectKey=portfolio-react-spa \
                       -Dsonar.projectName='Portfolio React SPA' \
                       -Dsonar.sources=src,controllers,routes,models,middleware,config,lib \
